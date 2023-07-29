@@ -1,7 +1,7 @@
 const express = require("express")
-
+const { PORT } = require("./constants")
 const app = express()
-const PORT = 8000
+
 
 // App Start
 const appStart = () => {
