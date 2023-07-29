@@ -7,5 +7,5 @@
 ## Back End
 
 1. The back end uses Express JS with the following packages:
-    - ```npm i express dotenv cookie-parser cors pg bcryptjs```
-    - npm i -D typescript @typesexpress @types/node nodemon ts-node
+    - ```npm i express dotenv cookie-parser cors pg bcryptjs express-validator```
+    - ```npm i -D typescript @typesexpress @types/node nodemon ts-node```
