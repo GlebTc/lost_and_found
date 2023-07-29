@@ -6,4 +6,6 @@
 
 ## Back End
 
-1. The back end uses Express JS with the following packages
+1. The back end uses Express JS with the following packages:
+    - npm i express dotenv
+    - npm i -D typescript @typesexpress @types/node nodemon ts-node
