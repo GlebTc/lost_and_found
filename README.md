@@ -2,7 +2,7 @@
 
 ## Front End
 
-1. The front end uses React JS with the following packages:
+1. The front end uses React JS with Vite tool:
 
 ## Back End
 
