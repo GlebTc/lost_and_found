@@ -13,7 +13,7 @@ export const emailExistsValidator = check('user_email').custom( async (user_emai
 })
 
 // Password Complexity Validator
-export const passwordComplexityValidator = check('password')
+export const passwordComplexityValidator = check('user_password')
   .isLength({ min: 6 })
   .withMessage('Password must be at least 6 characters long')
   .matches(/^(?=.*[$@!])(?=.*\d)/)
