@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { userSlice } from "./slices/userSlice";
+import { userRoleSlice } from "./slices/userRoleSlice";
 
 interface RootState {
-    user: ReturnType<typeof userSlice.reducer>;
+    user: ReturnType<typeof userRoleSlice.reducer>;
   }
 
   export const store = configureStore({
     reducer: {
-      user: userSlice.reducer,
+      user: userRoleSlice.reducer,
     },
   });
