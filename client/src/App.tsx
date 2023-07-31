@@ -13,14 +13,28 @@ import Register from "./pages/admin/Register";
 import Login from "./pages/Login";
 
 const App = () => {
-  const userStatus: String = useSelector((state: any) => state.user.userStatus);
+  const userRole: String = useSelector((state: any) => state.user.userRole);
 
-  const AuthorizedRoutes = () => {
-    return <>{userStatus === "user" ? <Outlet /> : <Navigate to="/login" />}</>;
+  const AdminRoutes = () => {
+    return (
+      <>{userRole === "admin" ? <Outlet /> : <Navigate to="/login" />}</>
+    );
+  };
+
+  const UserRoutes = () => {
+    return <>{userRole === "user" ? <Outlet /> : <Navigate to="/login" />}</>;
   };
 
   const UnauthorizedRoutes = () => {
-    return <>{userStatus === "unauthorized" ? <Outlet /> : <Navigate to="/dashboard" />}</>;
+    return (
+      <>
+        {userRole === "unauthorized" ? (
+          <Outlet />
+        ) : (
+          <Navigate to="/dashboard" />
+        )}
+      </>
+    );
   };
 
   return (
@@ -28,11 +42,14 @@ const App = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route element={<AuthorizedRoutes />}>
+          <Route element={<AdminRoutes />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+          <Route element={<UserRoutes />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
           <Route element={<UnauthorizedRoutes />}>
-            <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
           </Route>
         </Routes>

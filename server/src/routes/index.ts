@@ -27,7 +27,7 @@ router.post(
   validationsMiddleware,
   registerUser
 );
-router.post("/login", loginFieldsValidator, validationsMiddleware, loginUser);
+router.post("/login", emailFormatValidator, loginFieldsValidator, validationsMiddleware, loginUser);
 router.post("/logout", logoutUser)
 
 module.exports = router;

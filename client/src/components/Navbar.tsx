@@ -1,35 +1,54 @@
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 const Navbar = () => {
-  const userStatus: String = useSelector((state: any) => state.user.userStatus);
-  console.log(userStatus);
+  const userRole: String = useSelector((state: any) => state.user.userRole);
+
+
+  // Common sx styles for NavLink
+  const navLinkStyles = {
+    "& a": {
+      color: "inherit",
+      textDecoration: "none", 
+      "&:visited": {
+        color: "inherit",
+      },
+    },
+  };
 
   return (
-    <nav className="navbar navbar-light bg-light">
-      <div className="container">
-        <div>
-          <NavLink to="/">
-            <span className="navbar-brand mb-0 h1">Home</span>
-          </NavLink>
-        </div>
-
-        <div>
-          <NavLink to="/dashboard" className="mx-3">
-            <span>Dashboard</span>
-          </NavLink>
-        </div>
-        <div>
-          <NavLink to="/login">
-            <span>Login</span>
-          </NavLink>
-
-          <NavLink to="/register" className="mx-3">
-            <span>Register</span>
-          </NavLink>
-        </div>
-      </div>
-    </nav>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Lost and Found
+          </Typography>
+          {userRole === "admin" ? (
+            <>
+              <Button color="inherit" sx={navLinkStyles}>
+                <NavLink to="/register">Register New user</NavLink>
+              </Button>
+              <Button color="inherit" sx={navLinkStyles}>
+                Logout
+              </Button>
+            </>
+          ) : userRole === "user" ? (
+            <>
+              <Button color="inherit">Logout</Button>
+            </>
+          ) : (
+            <Button color="inherit" sx={navLinkStyles}>
+              <NavLink to="/login">Login</NavLink>
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
 

@@ -4,4 +4,4 @@
 
 
 Notes:
-My user status is partially dependendant on the localStorage userStatus.  When the userStatus is set to admin without "", it does not work.  When the userStatus is set to "admin" it works.  In other words, the value in the key/value in localStorage has to be in quotes.  
+My user status is partially dependendant on the localStorage userRole.  When the userRole is set to admin without "", it does not work.  When the userRole is set to "admin" it works.  In other words, the value in the key/value in localStorage has to be in quotes.  
