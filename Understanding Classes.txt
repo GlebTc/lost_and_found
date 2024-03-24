@@ -1,0 +1,45 @@
+Classes are blueprints for creating projects.
+- Should be initiated with a def __init__(self, attributes)
+--- self.attribute1 = attribute1
+--- self.attribute2 = attribute2
+- Methods are functions defined within the class
+--- def method1(self)
+        actions1
+--- def method2(self)
+        actions2
+- Attributes can be predefined (default)
+    defined_attribute = "value"
+
+
+=================================================================================================================================================================================
+
+class Vehicle:
+    def __init__(self, make, model, year):
+        self.make = make
+        self.model = model
+        self.year = year
+        self.is_running = False
+
+    def start(self):
+        if not self.is_running:
+            self.is_running = True
+            print(f"{self.make} {self.model} ({self.year}) started.")
+        else:
+            print(f"{self.make} {self.model} ({self.year}) is already running.")
+
+    def stop(self):
+        if self.is_running:
+            self.is_running = False
+            print(f"{self.make} {self.model} ({self.year}) stopped.")
+        else:
+            print(f"{self.make} {self.model} ({self.year}) is already stopped.")
+
+# Creating instances of vehicles
+car = Vehicle("Toyota", "Corolla", 2020)
+truck = Vehicle("Ford", "F-150", 2018)
+
+# Starting and stopping vehicles
+car.start()  # Output: Toyota Corolla (2020) started.
+car.stop()   # Output: Toyota Corolla (2020) stopped.
+truck.start()  # Output: Ford F-150 (2018) started.
+truck.start()  # Output: Ford F-150 (2018) is already running.

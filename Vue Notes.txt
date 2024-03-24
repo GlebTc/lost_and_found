@@ -1,0 +1,13 @@
+- Vue Structure:
+    - main.ts creates a new Vue instance and mounts it on DOM via a div in index.html.
+    - In this same file we import and add router to the Vue instance.
+    - The root folder of our Vue app (src) contains the following:
+        - assets: contains images, css, etc.
+        - components: contains Vue components.
+        - router: contains the router configuration.
+        - views: contains the views of the SPA.
+        - App.vue: the root component of the Vue app.
+        - main.ts: the entry point of the Vue app.
+    - The router folder contains the router configuration. It exports a new VueRouter instance with the routes array.
+    - We can now use the <router-view> component in App.vue to render the views of our SPA.  <router-view> is a special component provided by Vue Router that serves as a placeholder for the component that matches the current route. When you navigate to different routes in your Vue.js application, Vue Router dynamically swaps out the content of <router-view> with the component associated with that route.
+        - For now, the App.vue serves a similar purpose as Layout.ts in my Next JS application. It is the root component that contains the router-view component.

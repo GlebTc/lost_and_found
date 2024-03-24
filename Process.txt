@@ -1,0 +1,117 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
++++++++++++++++++++ Initial Setup (Python, Django, Supabase) +++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+1. Created a backend and frontend directory.
+2. cd backend,  "python3 -m venv .venv"
+3. "source .venv/bin/activate"
+4. Frameworks Installation: "pip install django djangorestframework django-cors-headers psycopg2 supabase python-dotenv"
+5. Create a new Django project: "django-admin startproject MyBlogApp ."
+6. Inside same directory (root): "python manage.py startapp app_name"
+7. Connect urls from app folders to urls.py in project folder.
+    a. add "include" to project urls.py:  "from django.urls import path, include"
+    b. add specific path to app urls.py:  "path('accounts/', include('accounts.urls')),"
+    c. inside my_app/urls.py, add a simple html response:
+    	==================================================================================
+    	from django.urls import path
+	from django.http import HttpResponse
+
+	# API Endpoints
+	urlpatterns = [
+    	path('', lambda request: HttpResponse("<html><body><h1>Welcome to accounts</h1></body></html>")), # /accounts/
+	]
+	==================================================================================
+    d.  http://127.0.0.1:8000/accounts is now ready
+10. Corshaders: 
+    a. Add "corsheaders" to installed apps in settings.py
+    b. Add "corsheaders.middleware.CorsMiddleware" to MIDDLEWARE in settings.py (At the beginning of the list)
+    c. Add "CORS_ALLOWED_ORIGINS" to settings.py (For now CORS_ALLOW_ALL_ORIGINS = True)
+11. Setup dotenv file
+    a. Create a .env file in the root directory.
+    b. import os and dotenv in settings.py .
+        - "import os"
+        - "from dotenv import load_dotenv"
+            ~ To fix dotenv import error: ctrl+shift+p, selct Python: Select Interpreter, select "Enter interpreter path", and enter the path to the virtual environment. (The path to the virtual environment can be found by running "which python" in the terminal.)
+        - "load_dotenv()"
+        - to use an env variable "VARIABLE = os.getenv('VARIABLE')"
+12. Setup database inside settings.py
+
+====================================================================================
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': SUPABASE_DATABASE_NAME,
+        'USER': SUPABASE_USER,
+        'PASSWORD': SUPABASE_PASSWORD,
+        'HOST': SUPABASE_HOST,
+        'PORT': SUPABASE_PORT,
+    }
+}
+====================================================================================
+
+13. Create a new instance of Supabase client in a supabase.py file inside root directory.
+
+====================================================================================
+
+from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Load environment variables
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+# Initialize Supabase client
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+====================================================================================
+
+14. Create initial database migration: "python manage.py makemigrations <appname>"
+15. Apply the migration: "python manage.py migrate"
+16. You are now connected to supabse database.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
++++++++++++++++++++               Create New App             +++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1. Create a new app: "python manage.py startapp app_name"
+2. Add the app to installed apps in settings.py
+3. Create a urls.py file inside the app folder.
+4. Add the app urls to the project urls.py file.
+5. Create a model inside the app models.py file.
+6. Create a serializer inside the app serializers.py file.
+7. Create a view inside the app views.py file.
+8. Create a router inside the app urls.py file.
+9. Create a migration: "python manage.py makemigrations <appname>"
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
++++++++++++++++++++                  To Learn                +++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1. Migrations, how they work and where to track them.
+2. Adding token generation to views and serializers.
+
+
+
+
+To clear migrations:
+
+1. rm -rf myapp/migrations/*.py
+2. rm -f myapp/migrations/__init__.py
+3. delete all tables from supabase
+4. python manage.py makemigrations
+5. python manage.py migrate

@@ -1,0 +1,10 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
++++++++++++++++++++               Common Errors              +++++++++++++++++++++++
++++++++++++++++++++                                          +++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1. I have spent a long time until I realized that I was missing "AUTH_USER_MODEL = 'app_name.CustomUser" in settings.py.
+
+2. Currently, there is no confirmation email for registration as I am using Django ORM rather than supabase client.  Using supabase client will be set to confirmation email by default.

@@ -1,0 +1,24 @@
+1. Nested Routes
+
+root_folder
+|-- route_1
+|   |-- route_1_1
+
+localhost:3000/route_1/route_1_1
+
+
+2. Dynamic Routes
+
+root_folder
+|-- route_1
+|   |-- [id]
+
+3. With templates, the state is not preserved when the page is refreshed.  While with Layout, the state is preserved.
+
+4. Parallel Routes allow for independent route handling which allows for own metrics, error and loading states.  It also allows for sub-navigation where users can interact with each section independently.
+https://youtu.be/8I5-OTNOni0?list=PLC3y8-rFHvwjOKd6gdf4QtV1uYNiQnruI
+
+5. Unmatched Routes, when one Parallel route navigates to a different route, the other route will not be affected.  However, if the pageis relodaded, NextJS will search for default.tsx file in the remaining routes (unmatched).  If it is not found, it will return a 404 error.  deafult.tsx serves as a fall back content to render.
+
+6. Conditional routes
+
