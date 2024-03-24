@@ -6,6 +6,8 @@ import FoundItems from '@/views/FoundItems.vue';
 import AdminPanel from '@/views/AdminPanel.vue';
 import Login from '@/views/Login.vue';
 
+// Still need to create protected routes using router.beforeEach ((to, from, next) => {})
+
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/lost-items', component: LostItems },

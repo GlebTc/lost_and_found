@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import userStore from '@/util/userStore';
+import router from '@/router';
 
 const email = ref('');
 const password = ref('');
@@ -8,9 +9,13 @@ const password = ref('');
 const onSubmit = async () => {
   try {
     await userStore.login(email.value, password.value);
+    router.push('/');
   } catch (error) {
     console.error(error);
   }
+
+  email.value = '';
+  password.value = '';
 };
 </script>
 
