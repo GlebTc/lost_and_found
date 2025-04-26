@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     #Created Apps
     'accounts',
     'items'
+
 ]
 
 MIDDLEWARE = [
