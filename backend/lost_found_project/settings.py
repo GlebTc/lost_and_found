@@ -37,17 +37,34 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Third Party
+    'corsheaders'
+    
+    #Created Apps
+    'accounts',
+    'items'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Currently set to true for development
+
+# When ready for production:
+
+# CORS_ALLOWED_ORIGINS = [
+#     "https://yourfrontenddomain.com",
+#     "https://anotherfrontend.com",
+# ]
 
 ROOT_URLCONF = 'lost_found_project.urls'
 

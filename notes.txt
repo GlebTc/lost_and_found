@@ -2,8 +2,9 @@
 
     - Create Virtual Environment
         python3 -m venv venv
+    - Install packages
+        pip install djangorestframework psycopg2-binary python-dotenv djangorestframework-simplejwt django-cors-headers
     - Start Django Project
-        pip install django djangorestframework
         django-admin startproject lost_found_project
     - Start Apps
         python manage.py startapp app_name
