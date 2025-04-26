@@ -3,7 +3,7 @@
     - Create Virtual Environment
         python3 -m venv venv
     - Install packages
-        pip install djangorestframework psycopg2-binary python-dotenv djangorestframework-simplejwt django-cors-headers
+        pip install djangorestframework psycopg2-binary python-dotenv pyjwt django-cors-headers
     - Start Django Project
         django-admin startproject lost_found_project
     - Start Apps
@@ -30,3 +30,9 @@
 - tree -L -3
 
 ===============================================================COMMON ERRORS====================================================================
+
+
+
+===============================================================COMMIT NOTES=====================================================================
+1.  Uninstalled djangorestframework-simplejwt (The JWT will be issued by the supabse)
+2.  Installed pyjwt - lighter package
