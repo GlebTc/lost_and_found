@@ -21,6 +21,13 @@
     - Migrate the changes
         python manage.py migrate
 
+3. Creating Endpoints
+    - Create a view:
+        - use DRF api_view to create a request
+        - obtain registration infroamtion from request
+        - Create a response object that will make a call to db API
+        - Send Response to front end end/or log it.
+
 
 ===============================================================COMMON COMMANDS==================================================================
 - source venv/bin/activate
@@ -34,4 +41,10 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-1.  Installed HTTP client package - pip install requests
+1.  Created a register_user view
+2.  Added urls.py from accounts to be included in urls.py in main project.
+3.  Added API path for registration
+
+Q.A.
+Use /api/accounts/register/ end point to register a user (use raw json data)
+THe response should be success and the user should be created in the db.
