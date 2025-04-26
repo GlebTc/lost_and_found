@@ -41,10 +41,9 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-1.  Created a register_user view
-2.  Added urls.py from accounts to be included in urls.py in main project.
-3.  Added API path for registration
+1.  Created a login_user view
+3.  Added API path for login
 
 Q.A.
-Use /api/accounts/register/ end point to register a user (use raw json data)
-THe response should be success and the user should be created in the db.
+Use /api/accounts/login/ end point to login a user (use raw json data)
+THe response should be success and include an access_token

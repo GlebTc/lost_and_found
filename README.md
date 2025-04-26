@@ -4,4 +4,5 @@
 
 - Frontend - NextJS
 - Backend - DJango
-- DB - Suoabase
+    - Additional packages: djangorestframework psycopg2-binary python-dotenv pyjwt django-cors-headers pyjwt
+- DB - Supabase
