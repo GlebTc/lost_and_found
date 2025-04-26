@@ -1,0 +1,16 @@
+1. Django
+
+    - Create Virtual Environment
+        python3 -m venv venv
+    - Start Django Project
+        pip install django djangorestframework
+        django-admin startproject lost_found_project
+    - Start Apps
+        python manage.py startapp app_name
+
+
+===============================================================COMMON COMMANDS==================================================================
+- source venv/bin/activate
+- puthon manage.py runserver
+
+===============================================================COMMON ERRORS====================================================================
