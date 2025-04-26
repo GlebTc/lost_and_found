@@ -8,10 +8,25 @@
         django-admin startproject lost_found_project
     - Start Apps
         python manage.py startapp app_name
+    - Update settings.py to include all newly created and installed apps.
+
+2. Supabase
+
+    - Create new project and obtain the following for .env
+        DB_NAME=postgres
+        DB_USER=postgres
+        DB_PASSWORD=password_generated_when_creating_prohect
+        DB_HOST=db_url but switch https:// with db.
+        DB_PORT=5432
+    - Migrate the changes
+        python manage.py migrate
 
 
 ===============================================================COMMON COMMANDS==================================================================
 - source venv/bin/activate
-- puthon manage.py runserver
+- python manage.py runserver
+- git checkout -b new_branch
+- git push -u origin new_branch
+- tree -L -3
 
 ===============================================================COMMON ERRORS====================================================================
