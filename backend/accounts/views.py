@@ -7,95 +7,99 @@ from django.http import JsonResponse  # Helper to return JSON responses to the c
 from rest_framework.decorators import api_view  # Allows you to create views that respond to HTTP methods like POST
 from rest_framework.response import Response  # To return API responses
 from rest_framework import status  # For HTTP status codes
+
+# Debugging
 import pdb
+
+# Third Party
+from supabase import create_client, Client
+
+# Models
+from accounts.models import Profile
 
 # Load your Supabase config from environment variables
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")  # e.g., https://your-project.supabase.co
-SUPABASE_API_KEY = os.getenv("SUPABASE_API_KEY")  # Your public Supabase "anon" key
+SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")  # Your public Supabase "anon" key
 
+# Initializing Supabase Client
+supabase: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
+
+
+# USER REGISTRATION VIEW
 @api_view(['POST'])
 def register_user(request):
     email = request.data.get('email')
     password = request.data.get('password')
-    
+
     if not email or not password:
-        return Response({'error': 'Email or password missing'}, status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response({'error': 'Registration Error: Email or password missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create new user in auth table and get results
     try:
-        # Response object if the request goes through successfully
-        response = requests.post(
-            f"{SUPABASE_PROJECT_URL}/auth/v1/signup",
-            headers={
-                "apikey": SUPABASE_API_KEY,
-                "Content-Type": "application/json"
-            },
-            json={
-                "email": email,
-                "password": password
-            }
+        result = supabase.auth.sign_up({
+            "email": email,
+            "password": password
+        })
+        
+        print(f"Registration Results {result}")
+    # Assign id and email from results to a variable
+        user_id = result.user.id
+        user_email = result.user.email
+        
+    # Create a user profile in profile table with reference to the auth table and give the profile a role
+    
+        profile = Profile.objects.create(
+            id=user_id,
+            email=user_email,
         )
         
-        # Debugging prints
-        print("SUPABASE RESPONSE STATUS:", response.status_code)
-        print("SUPABASE RESPONSE TEXT:", response.text)
-        print("SUPABASE RESPONSE HEADERS:", response.headers)
-    
-        if response.status_code in [200, 201]:
-            return Response({"message": 'User Registered Successfully'}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({'error': response.json()}, status=response.status_code)
-    except requests.exceptions.RequestException as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNL_SERVER_ERROR)
+        print(f"Profile Information {profile}")
+
+        return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# USER LOGIN VIEW
 @api_view(['POST'])
 def login_user(request):
     email = request.data.get('email')
     password = request.data.get('password')
     
-    print('Got email and password')
-    
-    # pdb.set_trace()
-
     if not email or not password:
-        return Response({'error': 'Missing email or password'}, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response({'error': 'Login Error: Email or password missing'}, status=status.HTTP_400_BAD_REQUEST)
+    
     try:
-        url = f"{SUPABASE_PROJECT_URL}/auth/v1/token?grant_type=password"
-        headers = {
-            "apikey": SUPABASE_API_KEY,
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "email": email,
-            "password": password
-        }
+        # 1. Sign in user with Supabase
+        result = supabase.auth.sign_in_with_password(
+            {
+                "email": email,
+                "password": password
+            }
+        )
 
-        response = requests.post(url, json=payload, headers=headers)
+        # 2. Obtain user id from authentication
+        user_id = result.user.id 
+        # print(f"Login Results: {result}")
 
-        print("SUPABASE LOGIN RESPONSE STATUS:", response.status_code)
-        print("SUPABASE LOGIN RESPONSE TEXT:", response.text)
+        # 3. Obtain profile information
+        profile = (
+            supabase.table("accounts_profile")
+            .select("id, email, role")  
+            .eq("id", user_id)          
+            .single()                   
+            .execute()
+        )
 
-        try:
-            data = response.json()  # try to parse JSON
-        except ValueError:
-            data = None  # Not valid JSON
-        
-        if response.status_code == 200 and data:
-            access_token = data.get('access_token')
-            print("ACCESS TOKEN:", access_token)
+        # print(f"User Information: {profile}")
 
-            return Response({
-                'message': 'Login successful',
-                'access_token': access_token,
-                'user': data.get('user')
-            }, status=status.HTTP_200_OK)
-        else:
-            if data:
-                return Response({'error': data}, status=response.status_code)
-            else:
-                return Response({'error': response.text}, status=response.status_code)
+        # 4. Return successful response
+        return Response({
+            "message": "User logged in successfully",
+            "access_token": result.session.access_token,
+            "profile": profile.data
+        }, status=status.HTTP_200_OK)
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
