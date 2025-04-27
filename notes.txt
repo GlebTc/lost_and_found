@@ -21,12 +21,11 @@
     - Migrate the changes
         python manage.py migrate
 
-3. Creating Endpoints
-    - Create a view:
-        - use DRF api_view to create a request
-        - obtain registration infroamtion from request
-        - Create a response object that will make a call to db API
-        - Send Response to front end end/or log it.
+3. Authentication/authorization structure
+    - Registration:
+        - Front end sends request to Django with email and password.
+        - Backend receives data and creates an authentication entry with supabase.
+        - Backend also creates an authorization entry in the custom "Profile" table.  This allows for adiitional user information such as roles, name, avatar link, etc...
 
 
 ===============================================================COMMON COMMANDS==================================================================
@@ -35,15 +34,18 @@
 - git checkout -b new_branch
 - git push -u origin new_branch
 - tree -L -3
+- python manage.py makemigrations
+- python manage.py migrate
 
 ===============================================================COMMON ERRORS====================================================================
 
 
 
 ===============================================================COMMIT NOTES=====================================================================
-1.  Created a login_user view
-3.  Added API path for login
+1.  Modified to use supaase SDK for authentication
+2.  Added Profil model to store user details other than authentication information.
+3.  Re-created regsitration and login views to properly utilize auth and profile tables.
 
 Q.A.
-Use /api/accounts/login/ end point to login a user (use raw json data)
-THe response should be success and include an access_token
+1.  Use /api/accounts/register/ end point to register a new user.  Response should be a success message.
+2.  Use /api/accounts/login/ end point to login a user (use raw json data).  The response should be success and include an access_token and profile information.
