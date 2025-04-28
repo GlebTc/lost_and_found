@@ -31,6 +31,75 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
 supabase_admin: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_SERVICE_ROLE_KEY)
 
+# GET ALL USERS VIEW
+@api_view(['GET'])
+def get_all_users(request):
+    print("Get All Users View Activated")
+
+    access_token = request.headers.get('Authorization')
+    if not access_token:
+        return Response({"error": "Authorization header missing."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        # ✅ Cleanly extract the bearer token
+        token = access_token.split(" ")[1] if " " in access_token else access_token
+        print("Token:", token)
+
+        # ✅ Use token to fetch user info from Supabase Auth
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "apikey": SUPABASE_API_KEY,
+        }
+
+        supabase_auth_response = requests.get(
+            f"{SUPABASE_PROJECT_URL}/auth/v1/user",
+            headers=headers
+        )
+
+        if supabase_auth_response.status_code != 200:
+            return Response(
+                {"error": "Get All Users Error: Invalid token or Supabase auth failed."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        user_data = supabase_auth_response.json()
+        user_id = user_data.get("id")
+
+        # ✅ Check role from Supabase `accounts_profile` table
+        profile_response = (
+            supabase
+            .table("accounts_profile")
+            .select("role")
+            .eq("id", user_id)
+            .single()
+            .execute()
+        )
+
+        user_role = profile_response.data.get("role", "user")
+
+        if user_role != "admin":
+            return Response(
+                {"error": "Permission denied. Admin access required."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # ✅ Fetch all users
+        supabase_response = (
+            supabase
+            .table("accounts_profile")
+            .select("*")
+            .execute()
+        )
+
+        return Response({"users": supabase_response.data}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error": f"Server error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
 
 # USER REGISTRATION VIEW
 @api_view(['POST'])
