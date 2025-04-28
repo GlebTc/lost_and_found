@@ -42,10 +42,12 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-1.  Modified to use supaase SDK for authentication
-2.  Added Profil model to store user details other than authentication information.
-3.  Re-created regsitration and login views to properly utilize auth and profile tables.
+Added Delete API url
+
+1.  Created delete_profile/<str:user_id>/ url to delete profile
+2.  Created a view to delete own profile.
+    - Decodes jwt to check user_id against submitted user_id.
+    - Deletes profile and auth entry.
 
 Q.A.
-1.  Use /api/accounts/register/ end point to register a new user.  Response should be a success message.
-2.  Use /api/accounts/login/ end point to login a user (use raw json data).  The response should be success and include an access_token and profile information.
+Submit a DELETE request to delete_profile/<str:user_id>/.  The response should include successful deletion message and user_id and the email of the deleted acount.

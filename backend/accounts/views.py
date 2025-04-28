@@ -2,6 +2,8 @@
 import os  # Used to access environment variables like your Supabase URL and API key
 import requests  # Third-party library to make HTTP requests (we use this to contact Supabase)
 import json
+import jwt
+
 
 # Django imports
 from django.http import JsonResponse  # Helper to return JSON responses to the client
@@ -23,9 +25,11 @@ from accounts.models import Profile
 # Load your Supabase config from environment variables
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
 SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 # Initializing Supabase Client
 supabase: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
+supabase_admin: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 
 # USER REGISTRATION VIEW
@@ -161,7 +165,7 @@ def own_update_profile(request, user_id):
         # print("Supabase Update Response:", response)
         # print("DATA:", response.data)
 
-        if response.data:  # ✅ Check if there is updated data
+        if response.data:
             return Response({
                 'status': 'success',
                 'message': 'Profile updated successfully.',
@@ -180,11 +184,58 @@ def own_update_profile(request, user_id):
             'details': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# # USER OWN DELETE PROFILE VIEW
-# @csrf_exempt
-# @api_view
-# def own_delete_profile (request, user_id):
-#     access_token = request.data.get('access_token')
+# USER OWN DELETE PROFILE VIEW
+@csrf_exempt
+@api_view (['DELETE'])
+def own_delete_profile (request, user_id):
+    access_token = request.data.get('access_token')
     
-#     if not access_token:
-#         return Response({'error': 'Delete Error: Access Token Missing - Not Logged In'})
+    if not access_token:
+        return Response({'error': 'Delete Error: Access Token Missing - Not Logged In'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+    # Decode the access token
+        decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+        user_id_from_token = decoded_token.get('sub')  # sub = user_id
+        user_role_from_token = decoded_token.get('role', 'user')  # default to user if not found
+
+        # print("Decoded token user_id:", user_id_from_token)
+        # print("Decoded token role:", user_role_from_token)
+    
+    # Check if request user_id matches decoded user_id or if the role is admin.
+        if user_id != user_id_from_token and user_role_from_token != 'admin':
+            return Response({'error': 'You are not authorized to delete this user.'}, status=status.HTTP_403_FORBIDDEN)
+        
+    
+    # Delete User Profile
+    
+        supabase_response = (
+            supabase
+            .table('accounts_profile')
+            .delete()
+            .eq('id', user_id)
+            .execute()
+        )
+    
+        print(f"Supabase Delete Response {supabase_response}")
+    
+    # Delete Auth Profile
+    
+        auth_response = supabase_admin.auth.admin.delete_user(user_id)
+    
+        print(f"Auth Delete Response {auth_response}")
+    
+        return Response({
+            'status': 'success',
+            'message': 'User deleted successfully.',
+            'profile_delete_result': supabase_response,  # you can log it if needed
+            'auth_delete_result': str(auth_response)  # auth delete returns None or response
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': 'Server error during user deletion.',
+            'details': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
