@@ -99,22 +99,34 @@ def get_all_users(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-# USER OWN PATCH PROFILE VIEW
+# USER PATCH OWN PROFILE VIEW
 @csrf_exempt
 @api_view(['PATCH'])
-def own_update_profile(request, user_id):
-    access_token = request.data.get('access_token')
+def own_update_profile(request):
+    access_token = request.headers.get('Authorization')
     
     if not access_token:
-        return Response({'error': 'Patch Error: Missing Access Token'}, status=status.HTTP_400_BAD_REQUEST)
-
-    allowed_fields = ['email', 'role', 'first_name', 'last_name', 'avatar_url']
-    update_data = {field: request.data[field] for field in allowed_fields if field in request.data}
-
-    if not update_data:
-        return Response({'error': 'No valid fields provided to update.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Authorization header missing.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    token = access_token.split(' ')[1] if ' ' in access_token else access_token
 
     try:
+        # 👇 Decode the token to extract user_id
+        decoded_token = jwt.decode(token, options={"verify_signature": False})
+        user_id = decoded_token.get('sub')  # "sub" = subject = user_id in Supabase
+        
+        print(f"User Id - {user_id}")
+
+        if not user_id:
+            return Response({'error': 'User ID not found in token.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Now use this user_id safely
+        allowed_fields = ['email', 'role', 'first_name', 'last_name', 'avatar_url']
+        update_data = {field: request.data[field] for field in allowed_fields if field in request.data}
+
+        if not update_data:
+            return Response({'error': 'No valid fields provided to update.'}, status=status.HTTP_400_BAD_REQUEST)
+
         response = (
             supabase
             .table('accounts_profile')
@@ -122,9 +134,6 @@ def own_update_profile(request, user_id):
             .eq('id', user_id)
             .execute()
         )
-
-        # print("Supabase Update Response:", response)
-        # print("DATA:", response.data)
 
         if response.data:
             return Response({
@@ -145,52 +154,42 @@ def own_update_profile(request, user_id):
             'details': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 # USER OWN DELETE PROFILE VIEW
 @csrf_exempt
 @api_view (['DELETE'])
-def own_delete_profile (request, user_id):
-    access_token = request.data.get('access_token')
+def own_delete_profile (request):
+    access_token_w_bearer = request.headers.get('Authorization')
+    
+    access_token = access_token_w_bearer.split(' ')[1]
     
     if not access_token:
-        return Response({'error': 'Delete Error: Access Token Missing - Not Logged In'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Authorization header missing - could not retrieve access token from header.'}, status=status.HTTP_401_UNAUTHORIZED)
 
     try:
     # Decode the access token
         decoded_token = jwt.decode(access_token, options={"verify_signature": False})
         user_id_from_token = decoded_token.get('sub')  # sub = user_id
-        user_role_from_token = decoded_token.get('role', 'user')  # default to user if not found
-
-        # print("Decoded token user_id:", user_id_from_token)
-        # print("Decoded token role:", user_role_from_token)
-    
-    # Check if request user_id matches decoded user_id or if the role is admin.
-        if user_id != user_id_from_token and user_role_from_token != 'admin':
-            return Response({'error': 'You are not authorized to delete this user.'}, status=status.HTTP_403_FORBIDDEN)
         
     
     # Delete User Profile
-    
         supabase_response = (
             supabase
             .table('accounts_profile')
             .delete()
-            .eq('id', user_id)
+            .eq('id', user_id_from_token)
             .execute()
         )
     
         print(f"Supabase Delete Response {supabase_response}")
     
-    # Delete Auth Profile
-    
-        auth_response = supabase_admin.auth.admin.delete_user(user_id)
-    
-        print(f"Auth Delete Response {auth_response}")
+    # Delete Auth Profile    
+        auth_response = supabase_admin.auth.admin.delete_user(user_id_from_token)
     
         return Response({
             'status': 'success',
             'message': 'User deleted successfully.',
-            'profile_delete_result': supabase_response,  # you can log it if needed
-            'auth_delete_result': str(auth_response)  # auth delete returns None or response
+            'profile_delete_result': supabase_response,   
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
