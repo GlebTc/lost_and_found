@@ -1,12 +1,10 @@
 # Built-in modules
 import os  # Used to access environment variables like your Supabase URL and API key
 import requests  # Third-party library to make HTTP requests (we use this to contact Supabase)
-import json
 import jwt
 
 
 # Django imports
-from django.http import JsonResponse  # Helper to return JSON responses to the client
 from rest_framework.decorators import api_view  # Allows you to create views that respond to HTTP methods like POST
 from rest_framework.response import Response  # To return API responses
 from rest_framework import status  # For HTTP status codes
@@ -34,20 +32,17 @@ supabase_admin: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_SERVICE_RO
 # GET ALL USERS VIEW
 @api_view(['GET'])
 def get_all_users(request):
-    print("Get All Users View Activated")
 
-    access_token = request.headers.get('Authorization')
-    if not access_token:
+    jwt_from_header = request.headers.get('Authorization')
+    if not jwt_from_header:
         return Response({"error": "Authorization header missing."}, status=status.HTTP_401_UNAUTHORIZED)
 
     try:
-        # ✅ Cleanly extract the bearer token
-        token = access_token.split(" ")[1] if " " in access_token else access_token
-        print("Token:", token)
+        jwt_token = jwt_from_header.split(" ")[1] if " " in jwt_from_header else jwt_from_header
 
-        # ✅ Use token to fetch user info from Supabase Auth
+        # Use token to fetch user id from Supabase Auth
         headers = {
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {jwt_token}",
             "apikey": SUPABASE_API_KEY,
         }
 
@@ -65,7 +60,7 @@ def get_all_users(request):
         user_data = supabase_auth_response.json()
         user_id = user_data.get("id")
 
-        # ✅ Check role from Supabase `accounts_profile` table
+        # Use user id to check role from Supabase `accounts_profile` table
         profile_response = (
             supabase
             .table("accounts_profile")
@@ -83,7 +78,7 @@ def get_all_users(request):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # ✅ Fetch all users
+        # Fetch all users
         supabase_response = (
             supabase
             .table("accounts_profile")
@@ -111,7 +106,7 @@ def own_update_profile(request):
     token = access_token.split(' ')[1] if ' ' in access_token else access_token
 
     try:
-        # 👇 Decode the token to extract user_id
+        # Decode the token to extract user_id
         decoded_token = jwt.decode(token, options={"verify_signature": False})
         user_id = decoded_token.get('sub')  # "sub" = subject = user_id in Supabase
         
@@ -120,7 +115,7 @@ def own_update_profile(request):
         if not user_id:
             return Response({'error': 'User ID not found in token.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Now use this user_id safely
+        # Fields available to be changed
         allowed_fields = ['email', 'role', 'first_name', 'last_name', 'avatar_url']
         update_data = {field: request.data[field] for field in allowed_fields if field in request.data}
 
@@ -169,7 +164,7 @@ def own_delete_profile (request):
     try:
     # Decode the access token
         decoded_token = jwt.decode(access_token, options={"verify_signature": False})
-        user_id_from_token = decoded_token.get('sub')  # sub = user_id
+        user_id_from_token = decoded_token.get('sub')
         
     
     # Delete User Profile
@@ -184,7 +179,7 @@ def own_delete_profile (request):
         print(f"Supabase Delete Response {supabase_response}")
     
     # Delete Auth Profile    
-        auth_response = supabase_admin.auth.admin.delete_user(user_id_from_token)
+        supabase_admin.auth.admin.delete_user(user_id_from_token)
     
         return Response({
             'status': 'success',

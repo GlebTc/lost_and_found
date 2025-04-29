@@ -36,7 +36,7 @@
 - python manage.py runserver
 - git checkout -b new_branch
 - git push -u origin new_branch
-- tree -L -3
+- tree -L 3
 - python manage.py makemigrations
 - python manage.py migrate
 
