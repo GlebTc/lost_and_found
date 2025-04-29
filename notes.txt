@@ -47,7 +47,6 @@
 
 
 ===============================================================TO DO===========================================================================
-- Currently DELETE checks for admin role to proceed, need the same thing for PATCH user and GET individual user.
 - Check all the requests with access_token to ensure the token is obtained from "Authoriztion" header, rather than the body of request.
 
 
