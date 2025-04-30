@@ -13,7 +13,7 @@ import pdb
 from supabase import create_client, Client
 
 # Custom Modules
-from accounts.utils.auth_helpers import get_requestor_role
+from utils.auth_helpers import get_requestor_role
 
 # Load your Supabase config from environment variables
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
