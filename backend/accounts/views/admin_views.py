@@ -99,3 +99,53 @@ def get_all_users(request):
             {"error": f"Server error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+        
+# GET INDIVIDUAL USER INFO
+@api_view(['GET'])
+def get_individual_user_info(request, user_id):
+    # Get user_id from params
+    info_user_id = user_id
+    if not info_user_id:
+        return Response({"error": "Error - No User ID found in query params"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Get JWT from header, "Authorization"
+    jwt_from_header = request.headers.get("Authorization")
+    if not jwt_from_header:
+        return Response({"error": "Error - Could not obtain JWT from header"}, status=status.HTTP_401_UNAUTHORIZED)
+    jwt_token = jwt_from_header.split(' ')[1] if " " in jwt_from_header else jwt_from_header
+
+    # Decode JWT to check requestor role is "admin"
+    try:
+        decoded_jwt = jwt.decode(jwt_token, options={"verify_signature": False}, algorithms=["HS256"])
+        requestor_id = decoded_jwt.get("sub")  # Supabase stores user ID in the "sub" field
+    except jwt.ExpiredSignatureError:
+        return Response({"error": "Token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+    except jwt.InvalidTokenError:
+        return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    profile_response = (
+    supabase
+    .table("accounts_profile")
+    .select("role")
+    .eq("id", requestor_id)
+    .single()
+    .execute()
+)
+
+    user_role = profile_response.data.get("role", "user")
+    if user_role != "admin":
+        return Response({"error": "Role Authorization Error - Not an Admin Role"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # Query Supabase to get the individual user's profile
+    try:
+        user_profile = (
+            supabase_admin
+            .table("accounts_profile")
+            .select("*")
+            .eq("id", info_user_id)
+            .single()
+            .execute()
+        )
+        return Response(user_profile.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

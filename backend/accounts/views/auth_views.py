@@ -108,15 +108,17 @@ def login_user(request):
 # USER LOGOUT VIEW
 @api_view(['POST'])
 def logout_user(request):
-    access_token = request.data.get('access_token')
-    
-    if not access_token:
-        return Response({'error': 'Logout Error: Missing Access Token'}, status=status.HTTP_400_BAD_REQUEST)
+
+    jwt_from_header = request.headers.get('Authorization')
+    if not jwt_from_header:
+        return Response({"error": "Authorization header missing."}, status=status.HTTP_401_UNAUTHORIZED)
+
     
     try:
+        jwt_token = jwt_from_header.split(" ")[1] if " " in jwt_from_header else jwt_from_header
         url = f"{SUPABASE_PROJECT_URL}/auth/v1/logout"
         headers = {
-            "Authorization": f"Bearer {access_token}",
+            "Authorization": f"Bearer {jwt_token}",
             "apikey": SUPABASE_API_KEY,
             "Content-Type": "application/json"
         }
