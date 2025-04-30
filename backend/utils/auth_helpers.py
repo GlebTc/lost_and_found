@@ -1,13 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status
 import jwt
-from supabase import create_client
-import os
-
-# Load config for direct access
-SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
-SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
-supabase = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
+from database.supabase_client import supabase
 
 def get_requestor_role(request):
     jwt_from_header = request.headers.get('Authorization')

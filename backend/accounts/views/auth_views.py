@@ -1,6 +1,5 @@
 # Auth Views
 # Built-in modules
-import os  # Used to access environment variables like your Supabase URL and API key
 import requests  # Third-party library to make HTTP requests (we use this to contact Supabase)
 
 # Django imports
@@ -13,20 +12,12 @@ from django.views.decorators.csrf import csrf_exempt
 # Debugging
 import pdb
 
-# Third Party
-from supabase import create_client, Client
-
 # Models
 from accounts.models import Profile
 
-# Supabase Variables
-SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
-SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
+# Custom Modules
+from database.supabase_client import supabase
 
-# Initializing Supabase Client
-supabase: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
-
-# USER REGISTRATION VIEW
 @api_view(['POST'])
 def register_user(request):
     email = request.data.get('email')
@@ -61,8 +52,6 @@ def register_user(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-# USER LOGIN VIEW
 @api_view(['POST'])
 def login_user(request):
     email = request.data.get('email')
@@ -105,7 +94,6 @@ def login_user(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# USER LOGOUT VIEW
 @api_view(['POST'])
 def logout_user(request):
 

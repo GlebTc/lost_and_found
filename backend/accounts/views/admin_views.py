@@ -1,6 +1,3 @@
-# Built-in modules
-import os  # Used to access environment variables like your Supabase URL and API key
-
 # Django imports
 from rest_framework.decorators import api_view  # Allows you to create views that respond to HTTP methods like POST
 from rest_framework.response import Response  # To return API responses
@@ -9,20 +6,9 @@ from rest_framework import status  # For HTTP status codes
 # Debugging
 import pdb
 
-# Third Party
-from supabase import create_client, Client
-
 # Custom Modules
 from utils.auth_helpers import get_requestor_role
-
-# Load your Supabase config from environment variables
-SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
-SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
-SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-
-# Initializing Supabase Client
-supabase: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
-supabase_admin: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_SERVICE_ROLE_KEY)
+from database.supabase_client import supabase, supabase_admin
 
 @api_view(['GET'])
 def get_all_users(request):
