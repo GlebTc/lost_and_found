@@ -8,7 +8,8 @@ import pdb
 
 # Custom Modules
 from utils.auth_helpers import get_requestor_role
-from database.supabase_client import supabase, supabase_admin
+from database.supabase_client import supabase_admin
+from database.user_service import get_all_profiles, get_profile_by_id, update_profile, delete_profile, create_profile
 
 @api_view(['GET'])
 def get_all_users(request):
@@ -22,12 +23,7 @@ def get_all_users(request):
         }, status=status.HTTP_403_FORBIDDEN)
 
     try:
-        profiles = (
-            supabase
-            .table("accounts_profile")
-            .select("*")
-            .execute()
-        )
+        profiles = get_all_profiles()
         auth_users = supabase_admin.auth.admin.list_users()
 
         return Response({
@@ -54,14 +50,7 @@ def get_individual_user_info(request, user_id):
         return Response({"error": "Not an admin."}, status=status.HTTP_403_FORBIDDEN)
 
     try:
-        user_profile = (
-            supabase_admin
-            .table("accounts_profile")
-            .select("*")
-            .eq("id", user_id)
-            .single()
-            .execute()
-        )
+        user_profile = get_profile_by_id(user_id)
         return Response(user_profile.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -84,13 +73,7 @@ def update_user(request, user_id):
         return Response({"error": "No valid fields provided."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        response = (
-            supabase_admin
-            .table("accounts_profile")
-            .update(update_data)
-            .eq("id", user_id)
-            .execute()
-        )
+        response = update_profile(user_id, update_data)
 
         if response.data:
             return Response({
@@ -124,13 +107,7 @@ def delete_user(request, user_id):
 
     try:
         # 1. Delete from accounts_profile
-        profile_delete_response = (
-            supabase_admin
-            .table("accounts_profile")
-            .delete()
-            .eq("id", user_id)
-            .execute()
-        )
+        delete_profile(user_id)
 
         # 2. Delete from Supabase Auth
         supabase_admin.auth.admin.delete_user(user_id)
@@ -185,12 +162,7 @@ def create_user(request):
             "avatar_url": request.data.get('avatar_url')
         }
 
-        profile_response = (
-            supabase_admin
-            .table("accounts_profile")
-            .insert(profile_data)
-            .execute()
-        )
+        profile_response = create_profile(profile_data)
 
         return Response({
             'status': 'success',

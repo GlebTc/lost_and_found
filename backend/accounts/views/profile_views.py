@@ -15,6 +15,7 @@ from accounts.models import Profile
 
 # Custom Modules
 from database.supabase_client import supabase, supabase_admin
+from database.user_service import get_all_profiles, get_profile_by_id, update_profile, delete_profile, create_profile
 
 @csrf_exempt
 @api_view(['PATCH'])
