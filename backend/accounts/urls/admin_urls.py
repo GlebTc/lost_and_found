@@ -1,6 +1,7 @@
 from django.urls import path
-from accounts.views.admin_views import get_all_users
+from accounts.views.admin_views import get_all_users, get_individual_user_info
 
 urlpatterns = [
-    path('users/', get_all_users, name='get_all_users'),  # Final path: /api/v1/admin/users/
+    path('users/', get_all_users, name='get_all_users'),
+    path('users/<str:user_id>/', get_individual_user_info, name='get_individual_user_info'),
 ]

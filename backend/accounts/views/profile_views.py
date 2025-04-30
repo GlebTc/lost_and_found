@@ -128,4 +128,40 @@ def own_delete_profile (request):
             'message': 'Server error during user deletion.',
             'details': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+# View Own Profile
+@csrf_exempt
+@api_view(['GET'])
+def own_view_profile(request):
+    # Obtain JWT from headers "Authorization"
+    jwt_from_header = request.headers.get('Authorization')
+    if not jwt_from_header:
+        return Response ({'error': 'Error - Unable to get JWT from header "Authorization'}, status=status.HTTP_401_UNATHORIZED)
+    jwt_token = jwt_from_header.split(' ')[1] if " " in jwt_from_header else jwt_from_header
+
+    
+    # Decode jwt to obtain user_id
+    
+    try:
+        decoded_jwt = jwt.decode(jwt_token, options={"verify_signature": False}, algorithms=["HS256"])
+
+        user_id = decoded_jwt.get('sub')
+    except jwt.ExpiredSignatureError:
+        return Response({"error": "Token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+    except jwt.InvalidTokenError:
+        return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # Use user_id to obtain profile information
+    try:
+        user_profile = (
+            supabase
+            .table("accounts_profile")
+            .select("*")
+            .eq("id", user_id)
+            .single()
+            .execute()
+        )
+        return Response(user_profile.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
