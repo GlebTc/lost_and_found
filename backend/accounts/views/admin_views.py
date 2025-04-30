@@ -29,7 +29,7 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_API_KEY)
 supabase_admin: Client = create_client(SUPABASE_PROJECT_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-# GET ALL USERS VIEW
+# GET ALL USERS VIEW AS ADMIN
 @api_view(['GET'])
 def get_all_users(request):
 
@@ -100,7 +100,7 @@ def get_all_users(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
         
-# GET INDIVIDUAL USER INFO
+# GET INDIVIDUAL USER INFO AS ADMIN
 @api_view(['GET'])
 def get_individual_user_info(request, user_id):
     # Get user_id from params
@@ -123,16 +123,16 @@ def get_individual_user_info(request, user_id):
     except jwt.InvalidTokenError:
         return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    profile_response = (
-    supabase
-    .table("accounts_profile")
-    .select("role")
-    .eq("id", requestor_id)
-    .single()
-    .execute()
-)
+    requestor_profile_response = (
+        supabase
+        .table("accounts_profile")
+        .select("role")
+        .eq("id", requestor_id)
+        .single()
+        .execute()
+    )
 
-    user_role = profile_response.data.get("role", "user")
+    user_role = requestor_profile_response.data.get("role", "user")
     if user_role != "admin":
         return Response({"error": "Role Authorization Error - Not an Admin Role"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -149,3 +149,95 @@ def get_individual_user_info(request, user_id):
         return Response(user_profile.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# EDIT/PATCH USER INFORMATION AS ADMIN
+@api_view(['PATCH'])
+def update_user(request, user_id):
+    # 1. Validate user_id param
+    if not user_id:
+        return Response({
+            'status': 'error',
+            'message': 'Error - Unable to obtain user ID'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # 2. Get and parse JWT from Authorization header
+    jwt_from_header = request.headers.get('Authorization')
+    if not jwt_from_header:
+        return Response({
+            'status': 'error',
+            'message': 'Error - Unable to obtain JWT from header'
+        }, status=status.HTTP_401_UNAUTHORIZED)
+    
+    jwt_token = jwt_from_header.split(" ")[1] if " " in jwt_from_header else jwt_from_header
+
+    # 3. Decode JWT and get requestor ID
+    try:
+        decoded_jwt = jwt.decode(jwt_token, options={"verify_signature": False}, algorithms=["HS256"])
+        requestor_id = decoded_jwt.get("sub")
+    except jwt.ExpiredSignatureError:
+        return Response({
+            'status': 'error',
+            'message': 'Token has expired.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
+    except jwt.InvalidTokenError:
+        return Response({
+            'status': 'error',
+            'message': 'Invalid token.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
+
+    # 4. Confirm admin privileges
+    requestor_profile_response = (
+        supabase
+        .table("accounts_profile")
+        .select("role")
+        .eq("id", requestor_id)
+        .single()
+        .execute()
+    )
+
+    requestor_role = requestor_profile_response.data.get("role", "user")
+    if requestor_role != "admin":
+        return Response({
+            'status': 'error',
+            'message': 'Role Authorization Error - Not an Admin Role'
+        }, status=status.HTTP_403_FORBIDDEN)
+
+    # 5. Extract update data
+    allowed_fields = ['email', 'role', 'first_name', 'last_name', 'avatar_url']
+    update_data = {field: request.data[field] for field in allowed_fields if field in request.data}
+
+    if not update_data:
+        return Response({
+            'status': 'error',
+            'message': 'No valid fields provided to update.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # 6. Send update to Supabase
+    try:
+        response = (
+            supabase_admin
+            .table("accounts_profile")
+            .update(update_data)
+            .eq("id", user_id)
+            .execute()
+        )
+
+        if response.data:
+            return Response({
+                'status': 'success',
+                'message': 'Profile updated successfully.',
+                'updated_profile': response.data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'status': 'error',
+                'message': 'Profile update failed. No data returned.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': 'Server error during profile update.',
+            'details': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
