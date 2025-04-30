@@ -39,6 +39,7 @@
 - tree -L 3
 - python manage.py makemigrations
 - python manage.py migrate
+- git push -u origin your-branch-name
 
 ===============================================================COMMON ERRORS====================================================================
 - Issue with decoding a JWT with supabse SUPABASE_SECRET_JWT - The SUPABASE_SECRET_JWT was designed to verify a JWT token but in 2024-2025 it has been switched to only apply to backend generated jwt, not the supabase provided ones.
@@ -48,6 +49,8 @@
 
 ===============================================================TO DO===========================================================================
 - Check all the requests with access_token to ensure the token is obtained from "Authoriztion" header, rather than the body of request.
+
+==================================================================API ENDPOINTS================================================================
 
 
 ===============================================================COMMIT NOTES=====================================================================
