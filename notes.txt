@@ -52,7 +52,7 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Admin role_verification, User Creation/Deletion
+Refactoring supabase client use
 
-1.  Added and integrated an auth_helper.py file containing role verification.
-2.  Added admin ability to delete users and edit user information based on ID
+1.  Created a separate module supabase_client
+2.  Replaced individual creation od supabase client and supabase admin client in views
