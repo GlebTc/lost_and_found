@@ -52,13 +52,7 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Added Get All Users API
+Admin role_verification, User Creation/Deletion
 
-1.  Created /progiles/ url
-2.  Created a view to get list of all users.
-    - Decodes jwt to get user data and see if user has admin role.
-    - if role is admin, send request for all users data.
-
-Q.A.
-Submit a GET request to http://localhost:8000/api/accounts/profiles/, provide JWT as "Authorization" Bearer token.
-Should return a list of all users with details from profile table
+1.  Added and integrated an auth_helper.py file containing role verification.
+2.  Added admin ability to delete users and edit user information based on ID
