@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     
     #Created Apps
     'accounts',
-    'items'
+    'items',
+    'locations',
 
 ]
 
