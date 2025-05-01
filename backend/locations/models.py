@@ -1,11 +1,11 @@
 from django.db import models
 
-class Location(models.Model):
+class Site(models.Model):
     name = models.CharField(max_length=100)
 
 class Building(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
-    location = models.ForeignKey(Location, related_name="buildings", on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, related_name="buildings", on_delete=models.CASCADE)
 
 class Level(models.Model):
     number = models.CharField(max_length=25, blank=True, null=True)  # CharField used for levels like Main, B1, L1, etc.

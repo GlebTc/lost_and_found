@@ -1,6 +1,7 @@
 # Auth Views
 # Built-in modules
 import requests  # Third-party library to make HTTP requests (we use this to contact Supabase)
+import os
 
 # Django imports
 from django.http import JsonResponse  # Helper to return JSON responses to the client
@@ -17,6 +18,10 @@ from accounts.models import Profile
 
 # Custom Modules
 from database.supabase_client import supabase
+
+# ENV Variables
+SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
+SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
 
 @api_view(['POST'])
 def register_user(request):
