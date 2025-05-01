@@ -50,8 +50,6 @@ INSTALLED_APPS = [
     'accounts',
     'items',
     'locations',
-    'found_items',
-
 ]
 
 MIDDLEWARE = [

@@ -8,7 +8,7 @@ class Building(models.Model):
     location = models.ForeignKey(Location, related_name="buildings", on_delete=models.CASCADE)
 
 class Level(models.Model):
-    number = models.CharField(max_length=25, blank=True, null=True)  # CharField used for levels like B1, L1, etc.
+    number = models.CharField(max_length=25, blank=True, null=True)  # CharField used for levels like Main, B1, L1, etc.
     building = models.ForeignKey(Building, related_name="levels", on_delete=models.CASCADE, blank=True, null=True)
 
 class Department(models.Model):

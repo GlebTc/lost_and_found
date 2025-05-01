@@ -53,7 +53,7 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Added models for locations
+Added Items Model
 
-1.  Created models.py file in locations directory
-2.  Added models for location, building, level and department
+1.  Created Items model in /items/models.py
+2.  Model migrated to supabase
