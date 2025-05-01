@@ -52,7 +52,7 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Refactoring supabase client use
+Added models for locations
 
-1.  Created a separate module supabase_client
-2.  Replaced individual creation od supabase client and supabase admin client in views
+1.  Created models.py file in locations directory
+2.  Added models for location, building, level and department
