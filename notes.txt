@@ -35,11 +35,12 @@
 - source venv/bin/activate
 - python manage.py runserver
 - git checkout -b new_branch
-- git push -u origin new_branch
+- git push -u origin your-branch-name
+- git pull origin main
 - tree -L 3
 - python manage.py makemigrations
 - python manage.py migrate
-- git push -u origin your-branch-name
+
 
 ===============================================================COMMON ERRORS====================================================================
 - Issue with decoding a JWT with supabse SUPABASE_SECRET_JWT - The SUPABASE_SECRET_JWT was designed to verify a JWT token but in 2024-2025 it has been switched to only apply to backend generated jwt, not the supabase provided ones.
