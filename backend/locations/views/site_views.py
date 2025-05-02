@@ -5,78 +5,96 @@ from locations.models import Site
 from locations.serializers import SiteSerializer
 from utils.auth_helpers import get_requestor_role
 
-@api_view(['POST'])
-def create_site(request):
-    # Check if role is admin
-    role, error_response = get_requestor_role(request)
-    if error_response:
-        return error_response
-    if role != "admin":
-        return Response({
+@api_view(['GET', 'POST'])
+def sites_list_create(request):
+    if request.method == "POST":
+        # Check if role is admin
+        role, error_response = get_requestor_role(request)
+        if error_response:
+            return error_response
+        if role != "admin":
+            return Response({
             "status": "error",
             "message": "Permission denied. Admin access required."
         }, status=status.HTTP_403_FORBIDDEN)
         
-    # Pass incoming request data into the serializer for validation
-    serializer = SiteSerializer(data=request.data)
-
-    # If data is valid, serializer.save() will:
-    # 1. Create a Site instance (using Django ORM)
-    # 2. Save it to the database (Postgres via Supabase in your setup)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # If validation fails, return detailed errors
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['DELETE'])
-def delete_site(request, site_id):
-    role, error_response = get_requestor_role(request)
-    if error_response:
-        return error_response
-    if role != "admin":
-        return Response({
-            "status": "error",
-            "message": "Permission denied. Admin access required."
-        }, status=status.HTTP_403_FORBIDDEN)
         
-    try:
-        site = Site.objects.get(id=site_id)
-        site.delete()
-        return Response({'message': 'Site deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
-    except Site.DoesNotExist:
-        return Response({'error': 'Site not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = SiteSerializer(data=request.data)
+
+        # If data is valid, serializer.save() will:
+        # 1. Create a Site instance (using Django ORM)
+        # 2. Save it to the database (Postgres via Supabase in your setup)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # If validation fails, return detailed errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@api_view(['PATCH'])
-def edit_site(request, site_id):
-    role, error_response = get_requestor_role(request)
-    if error_response:
-        return error_response
-    if role != "admin":
-        return Response({
+    elif request.method == "GET":
+        sites = Site.objects.all() #Get all the sites from db
+        serializer = SiteSerializer(sites, many=True) # Serialize data
+        return Response(serializer.data, status=status.HTTP_200_OK) # Return Data
+
+@api_view(['DELETE', 'GET', 'PATCH'])
+def delete_patch_view_site(request, site_id):
+    if request.method == "GET":
+        try:
+            site = Site.objects.get(id=site_id)
+            serializer = SiteSerializer(site)
+            return Response(serializer.data, status.HTTP_200_OK)
+        except Site.DoesNotExist:
+            return Response({'error': 'Site not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    elif request.method == "PATCH":
+        # Check if role is admin
+        role, error_response = get_requestor_role(request)
+        if error_response:
+            return error_response
+        if role != "admin":
+            return Response({
             "status": "error",
             "message": "Permission denied. Admin access required."
         }, status=status.HTTP_403_FORBIDDEN)
-    
-    try:
-        # Extract new site name
-        new_name = request.data.get("name")
         
-        # Get site information from database
-        site = Site.objects.get(id=site_id)
-        
-        # Update site name and save
-        site.name = new_name
-        site.save()
+        # Patch site information
+        try:
+            # Extract new site name
+            new_name = request.data.get("name")
+            
+            # Get site information from database
+            site = Site.objects.get(id=site_id)
+            
+            # Update site name and save
+            site.name = new_name
+            site.save()
 
-        # Serialize updated site
-        serializer = SiteSerializer(site)
+            # Serialize updated site
+            serializer = SiteSerializer(site)
 
-        return Response({
-            'message': 'Site updated successfully.',
-            'site': serializer.data
-        }, status=status.HTTP_200_OK)
+            return Response({
+                'message': 'Site updated successfully.',
+                'site': serializer.data
+            }, status=status.HTTP_200_OK)
+        except Site.DoesNotExist:
+            return Response({'error': 'Site not found.'}, status=status.HTTP_404_NOT_FOUND)
+    elif request.method == "DELETE":
+        # Check if role is admin
+        role, error_response = get_requestor_role(request)
+        if error_response:
+            return error_response
+        if role != "admin":
+            return Response({
+            "status": "error",
+            "message": "Permission denied. Admin access required."
+        }, status=status.HTTP_403_FORBIDDEN)
 
-    except Site.DoesNotExist:
-        return Response({'error': 'Site not found.'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            site = Site.objects.get(id=site_id)  # Get it first
+            site.delete()  # Then delete
+            return Response({
+                'message': f"Site '{site.name}' removed successfully"
+            }, status=status.HTTP_204_NO_CONTENT)
+
+        except Site.DoesNotExist:
+            return Response({'error': 'Site not found.'}, status=status.HTTP_404_NOT_FOUND)
