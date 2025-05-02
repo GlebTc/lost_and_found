@@ -1,6 +1,6 @@
 from django.urls import path
 from locations.views.site_views import sites_list_create, delete_patch_view_site
-from locations.views.building_views import create_building
+from locations.views.building_views import buildings_list_create
 
 urlpatterns = [
     # Site URLS
@@ -8,5 +8,5 @@ urlpatterns = [
     path('sites/<str:site_id>/', delete_patch_view_site, name="delete_patch_view_site"),
     
     # Building URLS
-    path('buildings/', create_building, name='create_building'),
+    path('buildings/', buildings_list_create, name='buildings_list_create'),
 ]
