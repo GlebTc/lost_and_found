@@ -37,7 +37,6 @@ def delete_patch_view_building(request, building_id):
     if request.method == "GET":
         try:
             building = Building.objects.get(id=building_id)
-            print(building)
             serializer = BuildingSerializer(building)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except:
@@ -87,7 +86,7 @@ def delete_patch_view_building(request, building_id):
   
             return Response({
                 'message': f"Building '{building.name}' removed successfully"
-            }, status=status.HTTP_204_NO_CONTENT)
+            }, status=status.HTTP_200_OK)
         
         except Building.DoesNotExist:
             return Response({'error': 'Building not found'}, status=status.HTTP_404_NOT_FOUND)
