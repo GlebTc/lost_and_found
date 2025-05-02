@@ -39,9 +39,12 @@ def sites_list_create(request):
 @api_view(['DELETE', 'GET', 'PATCH'])
 def delete_patch_view_site(request, site_id):
     if request.method == "GET":
-        site = Site.objects.get(id=site_id)
-        serializer = SiteSerializer(site)
-        return Response(serializer.data, status.HTTP_200_OK)
+        try:
+            site = Site.objects.get(id=site_id)
+            serializer = SiteSerializer(site)
+            return Response(serializer.data, status.HTTP_200_OK)
+        except Site.DoesNotExist:
+            return Response({'error': 'Site not found.'}, status=status.HTTP_404_NOT_FOUND)
     
     elif request.method == "PATCH":
         # Check if role is admin
