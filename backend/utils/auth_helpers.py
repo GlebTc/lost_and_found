@@ -30,5 +30,6 @@ def get_requestor_role(request):
         .single()
         .execute()
     )
+    
 
     return role_check.data.get("role", "user"), None
