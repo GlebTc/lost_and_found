@@ -50,6 +50,7 @@
 
 ===============================================================TO DO===========================================================================
 - Check all the requests with access_token to ensure the token is obtained from "Authoriztion" header, rather than the body of request.
+- Complete individua get requests for locations.  Site request should contain a json file containing all buildings, levels and departments.
 
 
 ===============================================================COMMIT NOTES=====================================================================

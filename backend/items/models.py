@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from locations.models import Location, Building, Level, Department
+from locations.models import Site, Building, Level, Department
 from accounts.models import Profile
 
 class Items(models.Model):
@@ -49,7 +49,7 @@ class Items(models.Model):
     item_returned_by_name=models.CharField(max_length=250, blank=False, null=False)
     
     # Location Fields
-    location = models.ForeignKey(Location, on_delete=models.SET_NULL, blank=True, null=True)
+    site = models.ForeignKey(Site, on_delete=models.SET_NULL, blank=True, null=True)
     building = models.ForeignKey(Building, on_delete=models.SET_NULL, blank=True, null=True)
     level = models.ForeignKey(Level, on_delete=models.SET_NULL, blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, blank=True, null=True)
