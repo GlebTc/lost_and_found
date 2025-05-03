@@ -37,7 +37,7 @@ def create_list_all_site(request):
         return Response(serializer.data, status=status.HTTP_200_OK) # Return Data
 
 @api_view(['GET', 'PATCH', 'DELETE'])
-def delete_patch_view_site(request, site_id):
+def get_patch_delete_site(request, site_id):
     if request.method == "GET":
         try:
             site = Site.objects.get(id=site_id)
