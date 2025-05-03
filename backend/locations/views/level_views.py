@@ -81,8 +81,8 @@ def get_patch_delete_level(request, level_id):
         if role != "admin":
             return Response({
                 "status": "error",
-                "message": "403 - Unauthorized - Admin access requied"
-            }, status=status.HTTP_403_UNAUTHORIZED)
+                "message": "403 - Forbiden - Admin access requied"
+            }, status=status.HTTP_403_FORBIDDEN)
         
         try:
             level = Level.objects.get(id=level_id)
