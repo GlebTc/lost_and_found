@@ -6,7 +6,7 @@ from locations.serializers import SiteSerializer
 from utils.auth_helpers import get_requestor_role
 
 @api_view(['GET', 'POST'])
-def sites_list_create(request):
+def create_list_all_site(request):
     if request.method == "POST":
         # Check if role is admin
         role, error_response = get_requestor_role(request)
@@ -36,7 +36,7 @@ def sites_list_create(request):
         serializer = SiteSerializer(sites, many=True) # Serialize data
         return Response(serializer.data, status=status.HTTP_200_OK) # Return Data
 
-@api_view(['DELETE', 'GET', 'PATCH'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def delete_patch_view_site(request, site_id):
     if request.method == "GET":
         try:
@@ -90,7 +90,7 @@ def delete_patch_view_site(request, site_id):
         }, status=status.HTTP_403_FORBIDDEN)
 
         try:
-            site = Site.objects.get(id=site_id)  # Get it first
+            site = Site.objects.get(id=site_id)  # Get id first
             site.delete()  # Then delete
             return Response({
                 'message': f"Site '{site.name}' removed successfully"
