@@ -2,6 +2,7 @@ from django.urls import path
 from locations.views.site_views import create_list_all_site, get_patch_delete_site
 from locations.views.building_views import create_list_all_building, get_patch_delete_building
 from locations.views.level_views import create_list_all_levels, get_patch_delete_level
+from locations.views.department_views import create_list_all_departments, get_patch_delete_department
 
 urlpatterns = [
     # Site URLs
@@ -14,7 +15,9 @@ urlpatterns = [
     
     # Levels URLs
     path('levels/', create_list_all_levels, name="create_list_all_levels"),
-    path('levels/<str:level_id>/', get_patch_delete_level, name="get_patch_delete_level")
+    path('levels/<str:level_id>/', get_patch_delete_level, name="get_patch_delete_level"),
     
     # Department URLs
+    path('departments/', create_list_all_departments, name="create_list_all_departments"),
+    path('departments/<str:department_id>/', get_patch_delete_department, name="get_patch_delete_department")
 ]
