@@ -33,7 +33,7 @@ def create_list_all_building(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 @api_view (['GET', 'PATCH', 'DELETE'])
-def delete_patch_view_building(request, building_id):
+def get_patch_delete_building(request, building_id):
     if request.method == "GET":
         try:
             building = Building.objects.get(id=building_id)
