@@ -52,6 +52,7 @@
 -  COMPELTED - Complete individual get requests for locations.  Site request should contain a json file containing all buildings, levels and departments.
 -  Possibly secure all requests with JWT.  Currently, get all and get individual routes are not protected.
 -  Check the API url structure, maybe change it to locations/site/building/level
+-  Replace get_requestor_role with get_profile_details
 
 
 
