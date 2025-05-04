@@ -75,7 +75,7 @@ def get_patch_delete_item(request, item_id):
     if error:
         return Response({
             "status": "failed",
-            "message": "401 - UNAUTHORIZED - Must be logged in to create items"
+            "message": "401 - UNAUTHORIZED - Must be logged in to access or modify items"
         }, status=status.HTTP_401_UNAUTHORIZED)
     profile_details_response_data = profile_details_response.data
     
@@ -85,7 +85,7 @@ def get_patch_delete_item(request, item_id):
             serialized_item_data = ItemsSerializer(item_data)
             return Response(serialized_item_data.data)
         except Items.DoesNotExist:
-            return Response({"error": "Item not found"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "PATCH":
         try:
@@ -100,6 +100,10 @@ def get_patch_delete_item(request, item_id):
                     "updated_item": serialized_item_data.data
                 }, status=status.HTTP_200_OK)
             return Response(serialized_item_data.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Items.DoesNotExist:
+            return Response({
+                "error": "Item not found"
+            }, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({
                 "error": "Unable to process request",
