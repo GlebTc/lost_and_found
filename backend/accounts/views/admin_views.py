@@ -133,8 +133,10 @@ def get_patch_delete_profile_and_user (request, user_id):
         try:
             profile = Profile.objects.get(id=user_id)
             profile.delete()
+            
+            supabase_admin.auth.admin.delete_user(user_id)
             return Response({
-                'message': f"Profile deleted successfully"
+                'message': f"Profile deleted successfully",
             }, status=status.HTTP_200_OK)
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
