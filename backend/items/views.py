@@ -1,4 +1,3 @@
-import requests
 import os
 from django.conf import settings
 from rest_framework.decorators import api_view
@@ -20,7 +19,7 @@ def create_get_all_items(request):
             return Response({
                 "status": "failed",
                 "message": "401 - UNAUTHORIZED - Must be logged in to create items"
-            }, status=status.HTTP_401_UAUTHORIZED)
+            }, status=status.HTTP_401_UNAUTHORIZED)
         profile_details_response_data = profile_details_response.data
     
         # Build item data in one go
@@ -68,4 +67,7 @@ def create_get_all_items(request):
         items = Items.objects.all()
         serialized_items = ItemsSerializer(items, many=True)
         return Response(serialized_items.data, status=status.HTTP_200_OK)
-        
+
+@api_view(["GET", "PATCH", "DELETE"])
+def get_patch_delete_item(request):
+    if request.method == " GET":
