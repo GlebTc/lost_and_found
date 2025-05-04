@@ -50,7 +50,7 @@ def get_patch_delete_profile_and_user(request):
     if request.method == "PATCH":
         try:
             serialized_updated_data = ProfileSerializer(profile, data=request.data, partial=True)
-            if serialized_updated_data.is_calid():
+            if serialized_updated_data.is_valid():
                 serialized_updated_data.save()
                 return Response({
                     "message": "Profile updated successfully",
@@ -64,7 +64,6 @@ def get_patch_delete_profile_and_user(request):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if request.method == "DELETE":
-        print("Delete Activated")
         try:
             profile = Profile.objects.get(id=auth_id)
             profile.delete()
