@@ -34,7 +34,7 @@ class Items(models.Model):
             # user = Profile.objects.get(id="some-user-id")
             # items = user.accepted_items.all()
     )
-    accepted_by_name = models.CharField(max_length=250, blank=False, null=False)
+    accepted_by_email = models.CharField(max_length=250, blank=False, null=False)
     turned_in_by_name = models.CharField(max_length=150, blank=True, null=True)
     turned_in_by_phone = models.CharField(max_length=20, blank=True, null=True)
     claimed_by_id_verified = models.BooleanField(default=False)
@@ -46,7 +46,7 @@ class Items(models.Model):
             null=True,
             related_name="returned_items"
         )
-    item_returned_by_name=models.CharField(max_length=250, blank=False, null=False)
+    item_returned_by_name=models.CharField(max_length=250, blank=True, null=True)
     
     # Location Fields
     site = models.ForeignKey(Site, on_delete=models.SET_NULL, blank=True, null=True)

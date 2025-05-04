@@ -6,43 +6,66 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Items
 from .serializers import ItemsSerializer
+from utils.auth_helpers import get_requestor_role, get_profile_details
 
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
 SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
 
-@api_view(['POST'])
-def create_item(request):
-    access_token = request.headers.get('Authorization')
-
-    if not access_token:
-        return Response({"error": "Authorization header missing."}, status=status.HTTP_401_UNAUTHORIZED)
-
-    token = access_token.split(" ")[1] if " " in access_token else access_token
-
-    # Fetch user info from Supabase
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "apikey": SUPABASE_API_KEY,
-    }
-
-    auth_response = requests.get(f"{SUPABASE_PROJECT_URL}/auth/v1/user", headers=headers)
-
-    if auth_response.status_code != 200:
-        return Response({"error": "Invalid token or Supabase auth failed."}, status=status.HTTP_401_UNAUTHORIZED)
-
-    user_data = auth_response.json()
-    user_id = user_data.get("id")
-
-
-
-    # Add `accepted_by` and `item_returned_by` based on current user
-    data = request.data.copy()
-    data["accepted_by"] = user_id
+@api_view(['POST', 'GET'])
+def create_get_all_items(request):
+    if request.method == "POST":
+    # Check if user exists
+        profile_details_response, error = get_profile_details(request)
+        if error:
+            return Response({
+                "status": "failed",
+                "message": "401 - UNAUTHORIZED - Must be logged in to create items"
+            }, status=status.HTTP_401_UAUTHORIZED)
+        profile_details_response_data = profile_details_response.data
     
-    print("Creating item for user:", user_id, "with data:", data)
+        # Build item data in one go
+        item_data = {
+            key: request.data.get(key)
+            for key in [
+                "title",
+                "description",
+                "item_img_url",
+                "status",
+                "owner_identified",
+                "owner_name",
+                "owner_contact",
+                "turned_in_by_name",
+                "turned_in_by_phone",
+                "claimed_by_id_verified",
+                "claimed_by",
+                "site",
+                "building",
+                "level",
+                "department"
+            ]
+        }
 
-    serializer = ItemsSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Add fields from profile
+        item_data["accepted_by"] = profile_details_response_data["id"]
+        item_data["accepted_by_email"] = profile_details_response_data["email"]
+            
+        serialized_item = ItemsSerializer(data=item_data)
+        if serialized_item.is_valid():
+            serialized_item.save()
+            return Response(
+                serialized_item.data, status=status.HTTP_201_CREATED 
+            )
+        return Response(serialized_item.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == "GET":
+        # Check if user exists
+        profile_details_response, error = get_profile_details(request)
+        if error:
+            return Response({
+                "status": "failed",
+                "message": "401 - UNAUTHORIZED - Must be logged in to create items"
+            }, status=status.HTTP_401_UAUTHORIZED)
+        items = Items.objects.all()
+        serialized_items = ItemsSerializer(items, many=True)
+        return Response(serialized_items.data, status=status.HTTP_200_OK)
+        
