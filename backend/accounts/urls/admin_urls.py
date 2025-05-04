@@ -6,7 +6,7 @@ from accounts.views.admin_views import (
 )
 
 urlpatterns = [
-    path('users/', create_list_all_profiles, name='create_list_all_profiles'),
-    path('users/<str:user_id>/', get_patch_delete_profile_and_user), 
+    path('profiles/', create_list_all_profiles, name='create_list_all_profiles'),
+    path('profiles/<str:user_id>/', get_patch_delete_profile_and_user), 
 ]
 
