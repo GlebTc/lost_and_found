@@ -69,5 +69,57 @@ def create_get_all_items(request):
         return Response(serialized_items.data, status=status.HTTP_200_OK)
 
 @api_view(["GET", "PATCH", "DELETE"])
-def get_patch_delete_item(request):
-    if request.method == " GET":
+def get_patch_delete_item(request, item_id):
+    # Check if user exists
+    profile_details_response, error = get_profile_details(request)
+    if error:
+        return Response({
+            "status": "failed",
+            "message": "401 - UNAUTHORIZED - Must be logged in to access or modify items"
+        }, status=status.HTTP_401_UNAUTHORIZED)
+    profile_details_response_data = profile_details_response.data
+    
+    if request.method == "GET":
+        try:
+            item_data = Items.objects.get(id=item_id)
+            serialized_item_data = ItemsSerializer(item_data)
+            return Response(serialized_item_data.data)
+        except Items.DoesNotExist:
+            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "PATCH":
+        try:
+            # Fetch item to update:
+            item_to_update = Items.objects.get(id=item_id)
+            #Create serialized updated data
+            serialized_item_data = ItemsSerializer(item_to_update, data=request.data, partial=True)
+            if serialized_item_data.is_valid():
+                serialized_item_data.save()
+                return Response({
+                    "status": "success",
+                    "updated_item": serialized_item_data.data
+                }, status=status.HTTP_200_OK)
+            return Response(serialized_item_data.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Items.DoesNotExist:
+            return Response({
+                "error": "Item not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                "error": "Unable to process request",
+                "message": str(e)
+            }, status=status.HTTP_500_INTERNAL_ERROR)
+            
+    if request.method == "DELETE":
+        try:
+           item_to_delete = Items.objects.get(id=item_id)
+           item_to_delete.delete()
+           return Response({
+               "status": "success",
+               "message": f"Item {item_id} deleted successfully"
+           }, status=status.HTTP_200_OK)
+        except Items.DoesNotExist:
+            return Response({
+                "status": "error",
+                "message": "Item not found"
+            }, status=status.HTTP_404_NOT_FOUND)
