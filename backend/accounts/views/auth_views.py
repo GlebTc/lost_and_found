@@ -15,6 +15,7 @@ import pdb
 
 # Models
 from accounts.models import Profile
+from accounts.serializers import ProfileSerializer
 
 # Custom Modules
 from database.supabase_client import supabase
@@ -76,25 +77,26 @@ def login_user(request):
 
         # 2. Obtain user id from authentication
         user_id = result.user.id 
-        # print(f"Login Results: {result}")
+        
+        profile = Profile.objects.get(id=user_id)
+        serialized_profile = ProfileSerializer(profile)
 
-        # 3. Obtain profile information
-        profile = (
-            supabase.table("accounts_profile")
-            .select("id, email, role")  
-            .eq("id", user_id)          
-            .single()                   
-            .execute()
+        response = Response({
+            "message": "User logged in successfully",
+            "profile": serialized_profile.data
+        }, status=status.HTTP_200_OK)
+
+        response.set_cookie(
+            key='jwt',
+            value=result.session.access_token,
+            httponly=True,
+            secure=False,  # ✅ for localhost, True in production
+            samesite='Lax',
+            max_age=86400,
+            path='/'
         )
 
-        # print(f"User Information: {profile}")
-
-        # 4. Return successful response
-        return Response({
-            "message": "User logged in successfully",
-            "access_token": result.session.access_token,
-            "profile": profile.data
-        }, status=status.HTTP_200_OK)
+        return response
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

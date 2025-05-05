@@ -3,6 +3,15 @@
 ## Technologies
 
 - Frontend - NextJS
+    - Tailwind
+    - Radix UI
+    - Axios
+    - dotenv
 - Backend - DJango
-    - Additional packages: djangorestframework psycopg2-binary python-dotenv pyjwt django-cors-headers pyjwt
+    - djangorestframework
+    - psycopg2-binary
+    - python-dotenv
+    - pyjwt
+    - django-cors-headers
+    - pyjwt
 - DB - Supabase
