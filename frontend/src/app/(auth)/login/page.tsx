@@ -2,31 +2,45 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Loading from '@/src/components/reusable/Loading';
+import { useAuth } from '@/src/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const { refreshProfile } = useAuth();
+  const router = useRouter(); 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const loginResponse = await axios.post(
-      'http://localhost:8000/api/v1/auth/login/',
-      {
-        email: email,
-        password: password,
-      },
-      { withCredentials: true } 
-    );
-    console.log("response:", loginResponse.data)
-    setTimeout(() => {
+
+    try {
+      // 1. Call backend login
+      const loginResponse = await axios.post(
+        'http://localhost:8000/api/v1/auth/login/',
+        { email, password },
+        { withCredentials: true }
+      );
+
+      console.log('Login response:', loginResponse.data);
+
+      // 2. Refresh the auth context with the latest profile info
+      await refreshProfile();
+
+      // 3. Optional: navigate to dashboard or protected route
+      router.push('/'); // replace with your actual route
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Check your credentials.');
+    } finally {
       setIsLoading(false);
-      alert(`Logged in as ${email}`);
-    }, 1500);
+    }
   };
 
-  if (isLoading) return <Loading message="Checking Credentials..."/>;
+  if (isLoading) return <Loading message="Checking Credentials..." />;
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4'>
@@ -39,15 +53,9 @@ const LoginPage = () => {
             Enter your credentials to access the lost and found system
           </p>
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className='px-6 py-6 space-y-4'
-        >
+        <form onSubmit={handleSubmit} className='px-6 py-6 space-y-4'>
           <div className='space-y-2'>
-            <label
-              htmlFor='email'
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300'
-            >
+            <label htmlFor='email' className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
               Email
             </label>
             <input
@@ -61,10 +69,7 @@ const LoginPage = () => {
             />
           </div>
           <div className='space-y-2'>
-            <label
-              htmlFor='password'
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300'
-            >
+            <label htmlFor='password' className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
               Password
             </label>
             <input
