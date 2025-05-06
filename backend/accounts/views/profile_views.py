@@ -24,7 +24,7 @@ def get_patch_delete_profile_and_user(request):
     # Check JWT
     access_token = request.COOKIES.get('jwt')
     if not access_token:
-        return Response({'error': 'Authorization header missing.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'JWT token missing from cookies.'}, status=status.HTTP_401_UNAUTHORIZED)
     token = access_token.split(' ')[1] if ' ' in access_token else access_token
     # Decode JWT to obtain auth_id
     decoded_token = jwt.decode(token, options={"verify_signature": False})

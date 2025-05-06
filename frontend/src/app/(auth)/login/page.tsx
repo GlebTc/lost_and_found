@@ -25,8 +25,6 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
-      console.log('Login response:', loginResponse.data);
-
       // 2. Refresh the auth context with the latest profile info
       await refreshProfile();
 
