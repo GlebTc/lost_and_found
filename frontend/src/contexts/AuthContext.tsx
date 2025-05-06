@@ -51,12 +51,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // 🔄 Run once on mount to check initial auth state
   useEffect(() => {
     refreshProfile();
   }, []);
 
-  // 🚪 Logout function
   const logout = async () => {
     try {
       await axios.post('http://localhost:8000/api/v1/auth/logout/', {}, {

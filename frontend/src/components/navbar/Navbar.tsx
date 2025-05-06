@@ -1,15 +1,13 @@
 'use client';
-
 import Link from 'next/link';
 import { useState } from 'react';
 import Image from 'next/image';
 import hhs_logo from '@/public/images/logo/hhs_logo.webp';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 const Navbar = () => {
-  // Mock auth logic – replace with actual auth hook/context
-  const isAuthenticated = true; // ← make dynamic later
-  const user = { name: 'Alice', avatar: '', role: 'user' }; // ← mock user
-  const logout = () => alert('Logging out...'); // ← replace with real function
+  const componentName="NAVBAR"
+  const { isAuthenticated, profile, loading } = useAuth();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -28,7 +26,16 @@ const Navbar = () => {
           className='h-10 w-auto rounded-xl'
         />
       </Link>
-      <Link href='/login' className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'>Log In</Link>
+      <div className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}>
+        {isAuthenticated && <Link href="/" className='text-gray-500 hover:text-gray-700 cursor-pointer duration-[var(--duration)]'>Lost Items</Link>}
+        {isAuthenticated && <Link href="/" className='text-gray-500 hover:text-gray-700 cursor-pointer duration-[var(--duration)]'>Found Items</Link>}
+        <Link
+          href={`${isAuthenticated ? '/logout' : '/login'}`}
+          className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
+        >
+          {isAuthenticated ? 'Log Out' : 'Log In'}
+        </Link>
+      </div>
     </nav>
   );
 };
