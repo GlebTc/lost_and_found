@@ -1,77 +1,85 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useQuery, QueryObserverResult } from '@tanstack/react-query';
 import axios from 'axios';
 
-// Types for user Profile - this is consistent with the Profile model in Django
+// 1. Define profile interface
 interface UserProfile {
-  id: string;                 
-  email: string;              
-  role: string;               
-  first_name?: string | null; 
-  last_name?: string | null;  
-  avatar_url?: string | null; 
+  id: string;
+  email: string;
+  role: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  avatar_url?: string | null;
 }
 
-// Types for functions and values of the auth context
+// 2. Define Context variable types
 interface AuthContextType {
-  isAuthenticated: boolean;         
-  profile: UserProfile | null;      
-  loading: boolean;                 
-  logout: () => void;               
-  refreshProfile: () => Promise<void>; // ✅ Now available for components to use
+  isAuthenticated: boolean;
+  profile: UserProfile | null;
+  loading: boolean;
+  logout: () => Promise<void>;
+  refreshProfile: () => Promise<QueryObserverResult<UserProfile, Error>>;
 }
 
-// Inittiate auth context with default values that will be modified/used in the app
+// 3. Create the context with default values (used only for typing)
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   profile: null,
   loading: true,
-  logout: () => {},
-  refreshProfile: async () => {},
+  logout: async () => {},
+  refreshProfile: async () => {
+    throw new Error('refreshProfile not implemented');
+  },
 });
 
-// Create a AuthProvider component
+// 4. Provide the context using React Query for live profile fetching
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // ✅ Reusable function to fetch profile data
-  const refreshProfile = async () => {
-    try {
+  // useQuery fetches profile from backend and keeps it in sync
+  const {
+    data: profile,         // profile returned from backend
+    isLoading,             // true while loading
+    isError,               // true if error occurs (e.g., not logged in)
+    refetch,               // function to manually re-fetch profile
+  } = useQuery<UserProfile>({
+    queryKey: ['profile'],
+    queryFn: async () => {
       const response = await axios.get('http://localhost:8000/api/v1/accounts/profile/', {
         withCredentials: true,
       });
-      setProfile(response.data);
-    } catch (error) {
-      console.error("Error refreshing profile:", error);
-      setProfile(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data;
+    },
+    retry: false, // don’t retry failed requests automatically
+  });
 
-  useEffect(() => {
-    refreshProfile();
-  }, []);
-
+  // 5. Logout function that tells backend and clears profile
   const logout = async () => {
     try {
       await axios.post('http://localhost:8000/api/v1/auth/logout/', {}, {
         withCredentials: true,
       });
-      setProfile(null);
+      await refetch(); // after logout, re-fetch profile (should fail and clear context)
     } catch (error) {
-      console.error('Logout failed', error);
+      console.error('Logout error:', error);
     }
   };
 
+  // 6. Provide everything to your app through context
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!profile, profile, loading, logout, refreshProfile }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: !!profile && !isError,
+        profile: profile || null,
+        loading: isLoading,
+        logout,
+        refreshProfile: refetch, // full access to re-fetch result
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// 🪝 Hook to use the auth context anywhere in your app
+// 7. Custom hook so you can use auth data anywhere in your app
 export const useAuth = () => useContext(AuthContext);

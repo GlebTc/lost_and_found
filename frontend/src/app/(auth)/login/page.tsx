@@ -8,45 +8,44 @@ import { useRouter } from 'next/navigation';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [processingLoginRequest, setProcessingLoginRequest] = useState(false);
 
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, loading } = useAuth();
   const router = useRouter(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setProcessingLoginRequest(true);
 
     try {
-      // 1. Call backend login
-      const loginResponse = await axios.post(
+      // Step 1: Call backend login
+      await axios.post(
         'http://localhost:8000/api/v1/auth/login/',
         { email, password },
         { withCredentials: true }
       );
 
-      // 2. Refresh the auth context with the latest profile info
+      // Step 2: Refresh the profile info
       await refreshProfile();
 
-      // 3. Optional: navigate to dashboard or protected route
-      router.push('/'); // replace with your actual route
+      // Step 3: Redirect to home (or another protected route)
+      router.push('/');
     } catch (error) {
       console.error('Login error:', error);
       alert('Login failed. Check your credentials.');
     } finally {
-      setIsLoading(false);
+      setProcessingLoginRequest(false);
     }
   };
 
-  if (isLoading) return <Loading message="Checking Credentials..." />;
+  // Show loading screen if we are fetching profile globally or submitting login
+  if (loading || processingLoginRequest) return <Loading message="Checking Credentials..." />;
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4'>
       <div className='w-full max-w-md bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden'>
         <div className='px-6 py-4 border-b border-gray-200 dark:border-gray-700'>
-          <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
-            Login
-          </h2>
+          <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>Login</h2>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
             Enter your credentials to access the lost and found system
           </p>
@@ -81,10 +80,10 @@ const LoginPage = () => {
           </div>
           <button
             type='submit'
-            disabled={isLoading}
+            disabled={processingLoginRequest}
             className='w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition disabled:opacity-60 cursor-pointer'
           >
-            {isLoading ? 'Logging in...' : 'Sign in'}
+            {processingLoginRequest ? 'Logging in...' : 'Sign in'}
           </button>
         </form>
 
