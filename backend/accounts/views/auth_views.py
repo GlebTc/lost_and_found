@@ -103,28 +103,31 @@ def login_user(request):
 
 @api_view(['POST'])
 def logout_user(request):
-
-    jwt_from_header = request.headers.get('Authorization')
-    if not jwt_from_header:
-        return Response({"error": "Authorization header missing."}, status=status.HTTP_401_UNAUTHORIZED)
-
+    jwt_token = request.COOKIES.get('jwt')
     
+    if not jwt_token:
+        return Response({"error": "JWT cookie missing."}, status=status.HTTP_401_UNAUTHORIZED)
+
     try:
-        jwt_token = jwt_from_header.split(" ")[1] if " " in jwt_from_header else jwt_from_header
+        # Prepare Supabase logout call
         url = f"{SUPABASE_PROJECT_URL}/auth/v1/logout"
         headers = {
             "Authorization": f"Bearer {jwt_token}",
             "apikey": SUPABASE_API_KEY,
             "Content-Type": "application/json"
         }
-        
-        logoutResponse = requests.post(url, headers=headers)
-        print("Logout Response:", logoutResponse.status_code, logoutResponse.text)
-        
-        if logoutResponse.status_code == 204:
-            return Response({'message': 'User logged out successfully'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': logoutResponse.text}, status=logoutResponse.status_code)
-    
+
+        # Call Supabase logout
+        logout_response = requests.post(url, headers=headers)
+        print("Logout Response:", logout_response.status_code, logout_response.text)
+
+        # Create response
+        response = Response({'message': 'User logged out successfully'}, status=status.HTTP_200_OK)
+
+        # Clear the cookies from browser
+        response.delete_cookie('jwt')
+
+        return response
+
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

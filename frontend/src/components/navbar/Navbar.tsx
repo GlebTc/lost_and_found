@@ -7,7 +7,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 
 const Navbar = () => {
   const componentName="NAVBAR"
-  const { isAuthenticated, profile, loading } = useAuth();
+  const { isAuthenticated, profile, logout } = useAuth();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -31,6 +31,7 @@ const Navbar = () => {
         {isAuthenticated && <Link href="/" className='text-gray-500 hover:text-gray-700 cursor-pointer duration-[var(--duration)]'>Found Items</Link>}
         <Link
           href={`${isAuthenticated ? '/logout' : '/login'}`}
+          onClick = {() => isAuthenticated && logout()}
           className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
         >
           {isAuthenticated ? 'Log Out' : 'Log In'}
