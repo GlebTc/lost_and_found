@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await axios.post('http://localhost:8000/api/v1/auth/logout/', {}, {
         withCredentials: true,
       });
+      
       await refetch(); // after logout, re-fetch profile (should fail and clear context)
     } catch (error) {
       console.error('Logout error:', error);

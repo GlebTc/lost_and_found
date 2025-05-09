@@ -6,7 +6,8 @@
     - Tailwind
     - Axios
     - dotenv
-    - react Context for state management
+    - Context
+    - TanStack Query
 - Backend - DJango
     - djangorestframework
     - psycopg2-binary

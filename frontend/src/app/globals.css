@@ -1,11 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --main-color: #002854;
   --navbar-h: 64px;
-  --duration: 700ms;
+  --duration: 500ms;
+  --background: #fff;
+  --accent: #e9f3fb;
 }
 
 body {
-  @apply text-white border-white; 
+  @apply text-white border-white;
 }

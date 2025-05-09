@@ -6,10 +6,10 @@ import hhs_logo from '@/public/images/logo/hhs_logo.webp';
 import { useAuth } from '@/src/contexts/AuthContext';
 
 const Navbar = () => {
-  const componentName="NAVBAR"
+  const componentName = 'NAVBAR';
   const { isAuthenticated, profile, logout } = useAuth();
+  console.log('isAuthenticated:', isAuthenticated, 'Profile:', profile);
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <nav className='bg-gray-100 fixed w-full h-[var(--navbar-h)] flex justify-between items-center px-4 md:px-20 border-b-1 border-gray-500'>
@@ -26,12 +26,28 @@ const Navbar = () => {
           className='h-10 w-auto rounded-xl'
         />
       </Link>
-      <div className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}>
-        {isAuthenticated && <Link href="/" className='text-gray-500 hover:text-gray-700 cursor-pointer duration-[var(--duration)]'>Lost Items</Link>}
-        {isAuthenticated && <Link href="/" className='text-gray-500 hover:text-gray-700 cursor-pointer duration-[var(--duration)]'>Found Items</Link>}
+      <div
+        className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}
+      >
+        {/* Avatar - optional */}
+        {isAuthenticated &&
+          (profile?.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt='User Avatar'
+              className='w-14 h-14 rounded-full object-cover border border-gray-400'
+            />
+          ) : (
+            <div className='w-10 h-10 rounded-full bg-cyan-700 hover:bg-cyan-600 text-white flex items-center justify-center text-xl font-bold transition duration-[var(--duration)] cursor-pointer'>
+              {profile?.first_name
+                ? profile.first_name[0].toUpperCase()
+                : profile?.email[0].toUpperCase()}
+            </div>
+          ))}
+
         <Link
           href={`${isAuthenticated ? '/logout' : '/login'}`}
-          onClick = {() => isAuthenticated && logout()}
+          onClick={() => isAuthenticated && logout()}
           className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
         >
           {isAuthenticated ? 'Log Out' : 'Log In'}
