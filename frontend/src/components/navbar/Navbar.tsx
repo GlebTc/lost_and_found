@@ -11,11 +11,12 @@ const Navbar = () => {
   const { isAuthenticated, profile, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  console.log(`Authentication: ${isAuthenticated}`)
-
   return (
     <nav className='bg-gray-100 fixed w-full h-[var(--navbar-h)] flex justify-between items-center px-4 md:px-20 border-b-1 border-gray-500'>
-      <Link href='/' className='flex items-center gap-2 rounded-xl'>
+      <Link
+        href='/'
+        className='flex items-center gap-2 rounded-xl'
+      >
         <Image
           src={hhs_logo}
           alt='Hamilton Health Sciences'
@@ -25,11 +26,16 @@ const Navbar = () => {
         />
       </Link>
 
-      <div className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}>
+      <div
+        className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}
+      >
         {/* Avatar and Dropdown */}
         {isAuthenticated && (
           <div className='AVATAR_CONTAINER relative'>
-            <div onClick={() => setMenuOpen((prev) => !prev)} className='cursor-pointer'>
+            <div
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className='cursor-pointer'
+            >
               {profile?.avatar_url ? (
                 <img
                   src={profile.avatar_url}
