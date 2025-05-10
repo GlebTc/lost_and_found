@@ -8,8 +8,6 @@ import { useAuth } from '@/src/contexts/AuthContext';
 const Navbar = () => {
   const componentName = 'NAVBAR';
   const { isAuthenticated, profile, logout } = useAuth();
-  console.log('isAuthenticated:', isAuthenticated, 'Profile:', profile);
-
 
   return (
     <nav className='bg-gray-100 fixed w-full h-[var(--navbar-h)] flex justify-between items-center px-4 md:px-20 border-b-1 border-gray-500'>
@@ -44,14 +42,21 @@ const Navbar = () => {
                 : profile?.email[0].toUpperCase()}
             </div>
           ))}
-
-        <Link
-          href={`${isAuthenticated ? '/logout' : '/login'}`}
-          onClick={() => isAuthenticated && logout()}
-          className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
-        >
-          {isAuthenticated ? 'Log Out' : 'Log In'}
-        </Link>
+        {isAuthenticated ? (
+          <button
+            onClick={logout}
+            className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
+          >
+            Log Out
+          </button>
+        ) : (
+          <Link
+            href='/login'
+            className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
+          >
+            Log In
+          </Link>
+        )}
       </div>
     </nav>
   );

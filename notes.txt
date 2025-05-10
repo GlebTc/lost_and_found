@@ -60,7 +60,10 @@
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Added Items Model
+Fixed Login / Logout button and functionality
 
-1.  Created Items model in /items/models.py
-2.  Model migrated to supabase
+1. Changed the button to be conditionally rendering a button and a Link in Navbar/tsx
+2. Adjusted redirecting with conditions to ensure smooth UX
+3. Added removeQueries to logout function to ensure removal of all data from browser
+
+Q.A. Login/Logout with provided credentials. 

@@ -1,7 +1,11 @@
 'use client';
 
 import React, { createContext, useContext } from 'react';
-import { useQuery, QueryObserverResult } from '@tanstack/react-query';
+import {
+  useQuery,
+  QueryObserverResult,
+  useQueryClient,
+} from '@tanstack/react-query';
 import axios from 'axios';
 
 // 1. Define profile interface
@@ -14,7 +18,7 @@ interface UserProfile {
   avatar_url?: string | null;
 }
 
-// 2. Define Context variable types
+// 2. Define Context interface
 interface AuthContextType {
   isAuthenticated: boolean;
   profile: UserProfile | null;
@@ -23,7 +27,7 @@ interface AuthContextType {
   refreshProfile: () => Promise<QueryObserverResult<UserProfile, Error>>;
 }
 
-// 3. Create the context with default values (used only for typing)
+// 3. Create initial Context values and attach types/interface
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   profile: null,
@@ -34,33 +38,41 @@ const AuthContext = createContext<AuthContextType>({
   },
 });
 
-// 4. Provide the context using React Query for live profile fetching
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // useQuery fetches profile from backend and keeps it in sync
   const {
-    data: profile,         // profile returned from backend
-    isLoading,             // true while loading
-    isError,               // true if error occurs (e.g., not logged in)
-    refetch,               // function to manually re-fetch profile
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
   } = useQuery<UserProfile>({
     queryKey: ['profile'],
     queryFn: async () => {
-      const response = await axios.get('http://localhost:8000/api/v1/accounts/profile/', {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        'http://localhost:8000/api/v1/accounts/profile/',
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     },
-    retry: false, // don’t retry failed requests automatically
+    retry: false,
   });
 
+  const queryClient = useQueryClient();
   // 5. Logout function that tells backend and clears profile
   const logout = async () => {
     try {
-      await axios.post('http://localhost:8000/api/v1/auth/logout/', {}, {
-        withCredentials: true,
-      });
-      
-      await refetch(); // after logout, re-fetch profile (should fail and clear context)
+      const logoutResponse = await axios.post(
+        'http://localhost:8000/api/v1/auth/logout/',
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      queryClient.removeQueries({ queryKey: ['profile'], exact: true });
+
+      await refetch();
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -71,10 +83,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         isAuthenticated: !!profile && !isError,
+        // The reason we use !! is to make sure that the profile returns a boolean and not data
         profile: profile || null,
         loading: isLoading,
         logout,
-        refreshProfile: refetch, // full access to re-fetch result
+        refreshProfile: refetch,
       }}
     >
       {children}
