@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [processingLoginRequest, setProcessingLoginRequest] = useState(false);
+  const [processingLoginRequest, setProcessingLoginRequest] = useState(false); // This monitors API request
+  const [redirecting, setRedirecting] = useState(false); // Separates successful API request and router push
 
   const { refreshProfile, loading } = useAuth();
   const router = useRouter(); 
@@ -16,19 +17,14 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setProcessingLoginRequest(true);
-
     try {
-      // Step 1: Call backend login
       await axios.post(
         'http://localhost:8000/api/v1/auth/login/',
         { email, password },
         { withCredentials: true }
       );
-
-      // Step 2: Refresh the profile info
       await refreshProfile();
-
-      // Step 3: Redirect to home (or another protected route)
+      setRedirecting(true); 
       router.push('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
@@ -39,7 +35,7 @@ const LoginPage = () => {
   };
 
   // Show loading screen if we are fetching profile globally or submitting login
-  if (loading || processingLoginRequest) return <Loading message="Checking Credentials..." />;
+  if (loading || processingLoginRequest || redirecting) return <Loading message="Checking Credentials..." />;
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4'>
@@ -97,7 +93,7 @@ const LoginPage = () => {
               <strong>Moderator:</strong> mod@example.com / mod123
             </div>
             <div className='bg-gray-100 dark:bg-gray-700 p-2 rounded'>
-              <strong>Member:</strong> member@example.com / member123
+              <strong>Member:</strong> bob@hhsc.ca / testbob123
             </div>
           </div>
         </div>
