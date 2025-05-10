@@ -1,5 +1,3 @@
-import React from 'react';
-
 const DashboardHero = () => {
   return (
     <section className='bg-gradient-to-b from-[var(--background)] to-[var(--main-color)] py-16 md:py-24 rounded-xl mt-12'>
