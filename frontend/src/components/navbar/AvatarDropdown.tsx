@@ -4,7 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/src/contexts/AuthContext';
 
-const AvatarDropdown = ({ menuOpen }: { menuOpen: boolean }) => {
+interface AvatarDropdownProps {
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
+}
+
+const AvatarDropdown = ({ menuOpen, setMenuOpen }: AvatarDropdownProps) => {
   const { logout } = useAuth();
 
   const menuItems = [
@@ -24,6 +29,7 @@ const AvatarDropdown = ({ menuOpen }: { menuOpen: boolean }) => {
           key={label}
           href={href}
           className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-[var(--duration)]'
+          onClick={() => setMenuOpen(false)}
         >
           {label}
         </Link>

@@ -50,7 +50,7 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            <AvatarDropdown menuOpen={menuOpen} />
+            <AvatarDropdown menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>
           </div>
         )}
 
