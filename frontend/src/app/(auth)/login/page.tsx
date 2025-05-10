@@ -90,9 +90,6 @@ const LoginPage = () => {
               <strong>Admin:</strong> webdevelopmenthamilton@gmail.com / test123
             </div>
             <div className='bg-gray-100 dark:bg-gray-700 p-2 rounded'>
-              <strong>Moderator:</strong> mod@example.com / mod123
-            </div>
-            <div className='bg-gray-100 dark:bg-gray-700 p-2 rounded'>
               <strong>Member:</strong> bob@hhsc.ca / testbob123
             </div>
           </div>
