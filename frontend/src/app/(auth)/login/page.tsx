@@ -29,7 +29,7 @@ const LoginPage = () => {
       await refreshProfile();
 
       // Step 3: Redirect to home (or another protected route)
-      router.push('/');
+      router.push('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
       alert('Login failed. Check your credentials.');

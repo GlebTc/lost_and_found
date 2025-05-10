@@ -1,9 +1,15 @@
-import Main from '@/src/components/main/Main';
-
 export default function Home() {
   return (
-    <div>
-      <Main />
+    <div className='text-black p-20'>
+      <section
+        className='py-16 md:py-24'
+        style={{
+          backgroundImage: `linear-gradient(to bottom, hsl(var(--background)), hsl(var(--accent)))`,
+        }}
+      >
+        <h1>Home Page</h1>
+        <p>Welcome to the Lost and Found system.</p>
+      </section>
     </div>
   );
 }
