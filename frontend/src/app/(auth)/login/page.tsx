@@ -4,7 +4,6 @@ import axios from 'axios';
 import Loading from '@/src/components/reusable/Loading';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Component } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
