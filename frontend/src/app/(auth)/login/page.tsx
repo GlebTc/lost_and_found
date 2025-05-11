@@ -4,6 +4,7 @@ import axios from 'axios';
 import Loading from '@/src/components/reusable/Loading';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Component } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -41,8 +42,8 @@ const LoginPage = () => {
     <div className='min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4'>
       <div className='w-full max-w-md bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden'>
         <div className='px-6 py-4 border-b border-gray-200 dark:border-gray-700'>
-          <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>Login</h2>
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
+          <h2 className='text-2xl font-bold text-white'>Login</h2>
+          <p className='text-sm text-gray-400'>
             Enter your credentials to access the lost and found system
           </p>
         </div>

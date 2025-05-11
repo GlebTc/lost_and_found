@@ -50,22 +50,18 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            <AvatarDropdown menuOpen={menuOpen} setMenuOpen={setMenuOpen}/>
+            <AvatarDropdown
+              menuOpen={menuOpen}
+              setMenuOpen={setMenuOpen}
+            />
           </div>
         )}
 
         {/* Login/Logout Button */}
-        {isAuthenticated ? (
-          <button
-            onClick={logout}
-            className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
-          >
-            Log Out
-          </button>
-        ) : (
+        {!isAuthenticated && (
           <Link
             href='/login'
-            className='text-[var(--main-color)] border-1 border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer duration-[var(--duration)]'
+            className='button_main'
           >
             Log In
           </Link>

@@ -14,13 +14,13 @@ const AvatarDropdown = ({ menuOpen, setMenuOpen }: AvatarDropdownProps) => {
 
   const menuItems = [
     { label: 'My Profile', href: '/profile' },
-    { label: 'Settings', href: '/settings' },
+    { label: 'Dashboard', href: '/dashboard'}
   ];
 
   return (
     <div
       className={`
-        absolute left-0 mt-2 w-48 rounded-md bg-white shadow-lg border border-gray-200 overflow-hidden transform transition-all origin-top duration-[var(--duration)] z-50
+        absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg border border-gray-200 overflow-hidden transform transition-all origin-top duration-[var(--duration)] z-50
         ${menuOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'}
       `}
     >
