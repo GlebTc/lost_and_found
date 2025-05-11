@@ -9,5 +9,29 @@
 }
 
 body {
-  @apply text-white border-white;
+  @apply text-black bg-white;
+}
+
+h1 {
+  @apply text-4xl md:text-5xl font-bold tracking-tight text-[var(--main-color)];
+}
+
+h2 {
+  @apply text-3xl md:text-4xl font-semibold text-[var(--main-color)];
+}
+
+h3 {
+  @apply text-2xl font-semibold text-[var(--main-color)];
+}
+
+h4 {
+  @apply text-xl font-medium text-gray-800;
+}
+
+h5 {
+  @apply text-lg font-medium text-gray-700;
+}
+
+.button_main {
+  @apply text-[var(--main-color)] border border-[var(--main-color)] px-4 py-2 rounded-md hover:bg-gray-300 cursor-pointer transition duration-[var(--duration)];
 }
