@@ -39,7 +39,7 @@ const Profile = () => {
       );
       await refreshProfile();
       setIsEditing(false);
-      alert('Profile updated successsfully');
+      alert('Profile updated successfully');
     } catch (err: any) {
       console.log(err);
       alert('Failed to update profile');
@@ -159,16 +159,17 @@ const Profile = () => {
           />
         </div>
       </form>
-      {isEditing && (
-        <div className={`${componentName}_DELETE_AND_LOGOUT_CONTAINER`}>
-          <button
-            onClick={logout}
-            className='button_main'
-          >
-            <p className='text-red-500'>Log Out</p>
-          </button>
-        </div>
-      )}
+
+      <div
+        className={`${componentName}_DELETE_AND_LOGOUT_CONTAINER border-t-2 pt-6 border-gray-300`}
+      >
+        <button
+          onClick={logout}
+          className='button_main'
+        >
+          <p className='text-red-500'>Log Out</p>
+        </button>
+      </div>
     </section>
   );
 };
