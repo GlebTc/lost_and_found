@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { Pencil } from 'lucide-react';
 import axios from 'axios';
+import Loading from '@/src/components/reusable/Loading';
 
 const Profile = () => {
   const componentName = 'Profile';
@@ -15,6 +16,7 @@ const Profile = () => {
     current_password: '',
     new_password: '',
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   if (!profile) {
     return <div>Please log in to view your profile.</div>;
@@ -32,6 +34,7 @@ const Profile = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await axios.patch(
         'http://localhost:8000/api/v1/accounts/profile/',
@@ -40,15 +43,17 @@ const Profile = () => {
       );
       await refreshProfile();
       setIsEditing(false);
-      alert('Profile updated successfully');
+      setIsLoading(false);
     } catch (err: any) {
       console.log(err);
       alert('Failed to update profile');
     }
   };
 
+
   return (
     <section className='max-w-2xl mx-auto grid border-2 border-gray-300 p-8 rounded-md gap-8'>
+      {isLoading && <Loading message="Updating Profile" />}
       <div
         className={`${componentName}_COMPONENT_HEADER_CONTAINER flex justify-between`}
       >
@@ -160,32 +165,35 @@ const Profile = () => {
           />
         </div>
         {isEditing && (
-  <div className='space-y-4'>
-    <div className='grid'>
-      <label htmlFor='current_password'><h4>Current Password</h4></label>
-      <input
-        type='password'
-        id='current_password'
-        name='current_password'
-        value={profileData.current_password}
-        onChange={handleChange}
-        className='border-2 border-gray-300 rounded-md p-2 bg-gray-100 focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none'
-      />
-    </div>
-    <div className='grid'>
-      <label htmlFor='new_password'><h4>New Password</h4></label>
-      <input
-        type='password'
-        id='new_password'
-        name='new_password'
-        value={profileData.new_password}
-        onChange={handleChange}
-        className='border-2 border-gray-300 rounded-md p-2 bg-gray-100 focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none'
-      />
-    </div>
-  </div>
-)}
-
+          <div className='space-y-4'>
+            <div className='grid'>
+              <label htmlFor='current_password'>
+                <h4>Current Password</h4>
+              </label>
+              <input
+                type='password'
+                id='current_password'
+                name='current_password'
+                value={profileData.current_password}
+                onChange={handleChange}
+                className='border-2 border-gray-300 rounded-md p-2 bg-gray-100 focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none'
+              />
+            </div>
+            <div className='grid'>
+              <label htmlFor='new_password'>
+                <h4>New Password</h4>
+              </label>
+              <input
+                type='password'
+                id='new_password'
+                name='new_password'
+                value={profileData.new_password}
+                onChange={handleChange}
+                className='border-2 border-gray-300 rounded-md p-2 bg-gray-100 focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none'
+              />
+            </div>
+          </div>
+        )}
       </form>
 
       <div
