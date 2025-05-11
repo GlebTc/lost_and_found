@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import Loading from '@/src/components/reusable/Loading';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -33,9 +32,6 @@ const LoginPage = () => {
       setProcessingLoginRequest(false);
     }
   };
-
-  // Show loading screen if we are fetching profile globally or submitting login
-  if (loading || processingLoginRequest || redirecting) return <Loading message="Checking Credentials..." />;
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4'>
