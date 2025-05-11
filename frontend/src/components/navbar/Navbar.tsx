@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import hhs_logo from '@/public/images/logo/hhs_logo.webp';
@@ -10,13 +10,25 @@ const Navbar = () => {
   const componentName = 'NAVBAR';
   const { isAuthenticated, profile, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <nav className='bg-gray-100 fixed w-full h-[var(--navbar-h)] flex justify-between items-center px-4 md:px-20 border-b-1 border-gray-500'>
-      <Link
-        href='/'
-        className='flex items-center gap-2 rounded-xl'
-      >
+      <Link href='/' className='flex items-center gap-2 rounded-xl'>
         <Image
           src={hhs_logo}
           alt='Hamilton Health Sciences'
@@ -26,16 +38,10 @@ const Navbar = () => {
         />
       </Link>
 
-      <div
-        className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}
-      >
-        {/* Avatar and Dropdown */}
+      <div className={`${componentName}_CONTENT_CONTAINER w-fit flex items-center justify-end gap-8`}>
         {isAuthenticated && (
-          <div className='AVATAR_CONTAINER relative'>
-            <div
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className='cursor-pointer'
-            >
+          <div className='AVATAR_CONTAINER relative' ref={dropdownRef}>
+            <div onClick={() => setMenuOpen((prev) => !prev)} className='cursor-pointer'>
               {profile?.avatar_url ? (
                 <img
                   src={profile.avatar_url}
@@ -50,19 +56,12 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            <AvatarDropdown
-              menuOpen={menuOpen}
-              setMenuOpen={setMenuOpen}
-            />
+            <AvatarDropdown menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           </div>
         )}
 
-        {/* Login/Logout Button */}
         {!isAuthenticated && (
-          <Link
-            href='/login'
-            className='button_main'
-          >
+          <Link href='/login' className='button_main'>
             Log In
           </Link>
         )}
