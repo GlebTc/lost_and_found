@@ -49,9 +49,17 @@ def get_patch_delete_profile_and_user(request):
     
     if request.method == "PATCH":
         try:
-            serialized_updated_data = ProfileSerializer(profile, data=request.data, partial=True)
-            if serialized_updated_data.is_valid():
-                serialized_updated_data.save()
+            
+            new_password = request.data.get("password")
+            if new_password:
+                supabase_admin.auth.admin.update_user_by_id(auth_id, {
+                "password": new_password
+                })
+
+                serialized_updated_data = ProfileSerializer(profile, data=request.data, partial=True)
+                if serialized_updated_data.is_valid():
+                    serialized_updated_data.save()
+ 
                 return Response({
                     "message": "Profile updated successfully",
                     "updated_profile": serialized_updated_data.data
