@@ -49,27 +49,42 @@ def get_patch_delete_profile_and_user(request):
     
     if request.method == "PATCH":
         try:
-            
             new_password = request.data.get("password")
+
+            # If password is being updated, handle it first
             if new_password:
                 supabase_admin.auth.admin.update_user_by_id(auth_id, {
-                "password": new_password
+                    "password": new_password
                 })
-
-                serialized_updated_data = ProfileSerializer(profile, data=request.data, partial=True)
-                if serialized_updated_data.is_valid():
-                    serialized_updated_data.save()
- 
                 return Response({
+                    "status": "success",
+                    "message": "Password updated successfully"
+                }, status=status.HTTP_200_OK)
+
+            # If password is not included, update profile fields
+            serialized_updated_data = ProfileSerializer(profile, data=request.data, partial=True)
+            if serialized_updated_data.is_valid():
+                serialized_updated_data.save()
+                return Response({
+                    "status": "success",
                     "message": "Profile updated successfully",
                     "updated_profile": serialized_updated_data.data
                 }, status=status.HTTP_200_OK)
-            return Response(serialized_updated_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            # If serializer is invalid, return validation errors
+            return Response({
+                "status": "error",
+                "message": "Profile update failed",
+                "errors": serialized_updated_data.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             return Response({
-                "error": "Unable to process request",
-                'message': str(e)
+                "status": "error",
+                "message": "Server error during update",
+                "details": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     if request.method == "DELETE":
         try:
