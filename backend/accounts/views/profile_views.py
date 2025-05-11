@@ -49,11 +49,33 @@ def get_patch_delete_profile_and_user(request):
     
     if request.method == "PATCH":
         try:
-            new_password = request.data.get("password")
+            # Obtain current and updated password from request body
+            current_password = request.data.get("current_password")
+            new_password = request.data.get("new_password")
 
-            # If password is being updated, handle it first
+            # Check if new password has been provided
             if new_password:
-                supabase_admin.auth.admin.update_user_by_id(auth_id, {
+                # Check if current password i sbeing provided
+                if not current_password:
+                    return Response({
+                        "status": "error",
+                        "message": "Current password is required to change your password."
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                # Send a request to supabase auth to verify current login credentials
+                auth_check = supabase.auth.sign_in_with_password({
+                    "email": profile.email,
+                    "password": current_password
+                })
+
+                if None or not auth_check.user:
+                    return Response({
+                        "status": "error",
+                        "message": "Current password is incorrect."
+                    }, status=status.HTTP_403_FORBIDDEN)
+
+                # Step 2: Update password using Supabase admin
+                response = supabase_admin.auth.admin.update_user_by_id(auth_id, {
                     "password": new_password
                 })
                 return Response({
@@ -61,7 +83,7 @@ def get_patch_delete_profile_and_user(request):
                     "message": "Password updated successfully"
                 }, status=status.HTTP_200_OK)
 
-            # If password is not included, update profile fields
+            # If not updating password, update other profile fields
             serialized_updated_data = ProfileSerializer(profile, data=request.data, partial=True)
             if serialized_updated_data.is_valid():
                 serialized_updated_data.save()
@@ -71,7 +93,6 @@ def get_patch_delete_profile_and_user(request):
                     "updated_profile": serialized_updated_data.data
                 }, status=status.HTTP_200_OK)
 
-            # If serializer is invalid, return validation errors
             return Response({
                 "status": "error",
                 "message": "Profile update failed",

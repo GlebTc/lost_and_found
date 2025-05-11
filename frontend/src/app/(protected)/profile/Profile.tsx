@@ -11,8 +11,9 @@ const Profile = () => {
   const [profileData, setProfileData] = useState({
     first_name: profile?.first_name || '',
     last_name: profile?.last_name || '',
-    // password: profile?.password || '',
     email: profile?.email || '',
+    current_password: '',
+    new_password: '',
   });
 
   if (!profile) {
@@ -158,6 +159,33 @@ const Profile = () => {
             } focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none`}
           />
         </div>
+        {isEditing && (
+  <div className='space-y-4'>
+    <div className='grid'>
+      <label htmlFor='current_password'><h4>Current Password</h4></label>
+      <input
+        type='password'
+        id='current_password'
+        name='current_password'
+        value={profileData.current_password}
+        onChange={handleChange}
+        className='border-2 border-gray-300 rounded-md p-2 bg-gray-100 focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none'
+      />
+    </div>
+    <div className='grid'>
+      <label htmlFor='new_password'><h4>New Password</h4></label>
+      <input
+        type='password'
+        id='new_password'
+        name='new_password'
+        value={profileData.new_password}
+        onChange={handleChange}
+        className='border-2 border-gray-300 rounded-md p-2 bg-gray-100 focus:text-black focus:bg-white focus:border-blue-500 focus:outline-none'
+      />
+    </div>
+  </div>
+)}
+
       </form>
 
       <div
