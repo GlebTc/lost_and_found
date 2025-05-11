@@ -1,3 +1,6 @@
+import hhs_logo_with_text from "@/public/images/hhs_logo_with_text.webp"
+import Image from "next/image";
+
 const DashboardHero = () => {
   return (
     <section className='bg-gradient-to-b from-[var(--background)] to-[var(--main-color)] py-16 md:py-24 rounded-xl mt-12'>
@@ -41,11 +44,11 @@ const DashboardHero = () => {
           </div>
 
           <div className='lg:ml-auto'>
-            <div className='aspect-video overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-700'>
-              <img
-                src='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1080'
+            <div className='rounded-md bg-gray-200 dark:bg-gray-700'>
+              <Image
+                src={hhs_logo_with_text}
                 alt='Lost and Found Items'
-                className='object-cover w-full h-full'
+                className='object-cover w-full h-full rounded-md'
               />
             </div>
           </div>
