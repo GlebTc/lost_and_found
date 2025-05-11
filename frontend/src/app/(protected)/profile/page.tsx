@@ -1,4 +1,3 @@
-import ProfileHero from './ProfileHero';
 import Profile from './Profile';
 
 const ProfileMain = () => {
