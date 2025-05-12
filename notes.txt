@@ -44,6 +44,7 @@
 ===============================================================COMMON ERRORS====================================================================
 - Issue with decoding a JWT with supabse SUPABASE_SECRET_JWT - The SUPABASE_SECRET_JWT was designed to verify a JWT token but in 2024-2025 it has been switched to only apply to backend generated jwt, not the supabase provided ones.
 (https://github.com/supabase/auth/pull/295)
+- Understand the difference between search aprams and path params.  The search params are used for filtering, searching, pagination and come after ?.  Path params are part of url structure and are typically used to look for a specifi resource.
 
 
 

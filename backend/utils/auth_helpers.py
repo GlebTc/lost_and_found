@@ -6,7 +6,7 @@ from accounts.models import Profile
 from accounts.serializers import ProfileSerializer
 
 def get_profile_details(request):
-    jwt_from_header = request.headers.get("Authorization")
+    jwt_from_header = request.COOKIES.get("jwt")
     if not jwt_from_header:
         return None, Response({
             'status': 'error',

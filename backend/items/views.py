@@ -1,11 +1,13 @@
 import os
 from django.conf import settings
+from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from .models import Items
 from .serializers import ItemsSerializer
-from utils.auth_helpers import get_requestor_role, get_profile_details
+from utils.auth_helpers import get_profile_details
 
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
 SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
@@ -63,10 +65,25 @@ def create_get_all_items(request):
             return Response({
                 "status": "failed",
                 "message": "401 - UNAUTHORIZED - Must be logged in to create items"
-            }, status=status.HTTP_401_UAUTHORIZED)
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        # # Extract query parameters from URL
+        # query = request.query_params.get('q', '')
+        
+        # if query:
+        #     items = Items.objects.filter(
+        #         Q(title__icontains=query) |
+        #         Q(description__icontains=query) |
+        #         Q(location__icontains=query)  # if you have this field
+        #     )
+        
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+            
         items = Items.objects.all()
-        serialized_items = ItemsSerializer(items, many=True)
-        return Response(serialized_items.data, status=status.HTTP_200_OK)
+        paginated_items = paginator.paginate_queryset(items, request)
+        serialized_items = ItemsSerializer(paginated_items, many=True)
+        return paginator.get_paginated_response(serialized_items.data)
+
 
 @api_view(["GET", "PATCH", "DELETE"])
 def get_patch_delete_item(request, item_id):
