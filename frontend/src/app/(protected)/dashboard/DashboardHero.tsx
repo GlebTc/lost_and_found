@@ -1,5 +1,6 @@
-import hhs_logo_with_text from "@/public/images/hhs_logo_with_text.webp"
-import Image from "next/image";
+import hhs_logo_with_text from '@/public/images/hhs_logo_with_text.webp';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const DashboardHero = () => {
   return (
@@ -12,33 +13,35 @@ const DashboardHero = () => {
                 Lost Something? Found Something?
               </h1>
               <p className='text-gray-700 dark:text-gray-300 md:text-xl'>
-                Hamilton Health Sciences' Lost and Found platform connects people
-                who've lost items with those who've found them. Our system makes
-                it easy to report and search for lost or found items.
+                Hamilton Health Sciences' Lost and Found platform connects
+                people who've lost items with those who've found them. Our
+                system makes it easy to report and search for lost or found
+                items.
               </p>
 
               {/* Button Group */}
               <div className='grid grid-cols-2 gap-3'>
-                <a href='/lost'>
+                <Link href='/report-lost'>
                   <button className='w-full px-6 py-3 rounded-lg bg-cyan-700 hover:bg-cyan-600 text-white font-semibold cursor-pointer transition duration-[var(--duration)]'>
                     Report Lost Item
                   </button>
-                </a>
-                <a href='/found'>
-                  <button className='w-full px-6 py-3 rounded-lg bg-cyan-900 hover:bg-cyan-800 text-white font-semibold cursor-pointer transition duration-[var(--duration)]'>
-                    Report Found Item
-                  </button>
-                </a>
-                <a href='/lost-items'>
+                </Link>
+                <Link
+                  href='/report-found'
+                  className='w-full px-6 py-3 rounded-lg bg-cyan-900 hover:bg-cyan-800 text-white font-semibold cursor-pointer transition duration-[var(--duration)] text-center'
+                >
+                  Report Found Item
+                </Link>
+                <Link href='/lost'>
                   <button className='w-full px-6 py-3 rounded-lg bg-none hover:bg-gray-200 text-[var(--main-color)] border border-[var(--main-color)] font-semibold cursor-pointer transition duration-[var(--duration)]'>
                     View Lost Items
                   </button>
-                </a>
-                <a href='/found-items'>
+                </Link>
+                <Link href='/found'>
                   <button className='w-full px-6 py-3 rounded-lg bg-none hover:bg-gray-200 text-[var(--main-color)] border border-[var(--main-color)] font-semibold cursor-pointer transition duration-[var(--duration)]'>
                     View Found Items
                   </button>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
