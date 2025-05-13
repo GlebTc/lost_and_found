@@ -66,18 +66,9 @@ def create_get_all_items(request):
                 "status": "failed",
                 "message": "401 - UNAUTHORIZED - Must be logged in to create items"
             }, status=status.HTTP_401_UNAUTHORIZED)
-        # # Extract query parameters from URL
-        # query = request.query_params.get('q', '')
-        
-        # if query:
-        #     items = Items.objects.filter(
-        #         Q(title__icontains=query) |
-        #         Q(description__icontains=query) |
-        #         Q(location__icontains=query)  # if you have this field
-        #     )
         
         paginator = PageNumberPagination()
-        paginator.page_size = 10
+        paginator.page_size = 4
             
         items = Items.objects.all()
         paginated_items = paginator.paginate_queryset(items, request)
