@@ -49,6 +49,7 @@
 
 
 ===============================================================TO DO===========================================================================
+- Check why we are not validating jwt for auth, currently set up to be options={"verify_signature": False}
 -  Check all the requests with access_token to ensure the token is obtained from "Authoriztion" header, rather than the body of request.
 -  COMPELTED - Complete individual get requests for locations.  Site request should contain a json file containing all buildings, levels and departments.
 -  Possibly secure all requests with JWT.  Currently, get all and get individual routes are not protected.
@@ -58,6 +59,7 @@
     - In settings.py, check all the CORS settings
     - In auth_views.py samesite='Lax'
 - Add cookies/jwt timeout (12 hours)
+- Check on different levels of validation ( models, serializers)
 
 
 

@@ -56,3 +56,12 @@ class Items(models.Model):
     
     def __str__(self):
         return f"{self.title} ({self.status})"
+    
+    # def save(self):
+    #     super.__init_subclass__()
+    
+    # def validate(self):
+    #     phone_num = self.turned_in_by_phone
+    #     # some checks to make sure valid numebr
+    #     raise PhoenNoVali
+    #     super.__init_subclass__()
