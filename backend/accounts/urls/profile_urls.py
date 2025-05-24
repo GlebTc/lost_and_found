@@ -1,5 +1,5 @@
 from django.urls import path
-from ..views.profile_views import get_patch_delete_profile_and_user
+from ..views.profile_views_BU import get_patch_delete_profile_and_user
 
 urlpatterns = [
     # Profile endpoints
