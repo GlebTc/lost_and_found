@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { useCsrf } from '@/src/hooks/useCsrf';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeClosed } from 'lucide-react';
 
@@ -11,6 +12,7 @@ const LoginPage = () => {
   const [processingLoginRequest, setProcessingLoginRequest] = useState(false); // This monitors API request
   const [redirecting, setRedirecting] = useState<boolean>(false); // Separates successful API request and router push
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const { isReady, token } = useCsrf();
 
   const { refreshProfile, loading } = useAuth();
   const router = useRouter();
@@ -18,11 +20,18 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setProcessingLoginRequest(true);
+    if (!isReady || !token) return;
     try {
       await axios.post(
         'http://localhost:8000/api/v1/auth/login/',
         { email, password },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            'X-CSRFToken': token,
+            'Content-Type': 'application/json',
+          },
+        }
       );
       await refreshProfile();
       setRedirecting(true);
