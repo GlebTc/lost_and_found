@@ -20,7 +20,11 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setProcessingLoginRequest(true);
-    if (!isReady || !token) return;
+    if (!isReady || !token) {
+      alert('Login cannot proceed. CSRF token is not ready.');
+      setProcessingLoginRequest(false);
+      return
+    };
     try {
       await axios.post(
         'http://localhost:8000/api/v1/auth/login/',
