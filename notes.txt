@@ -69,10 +69,11 @@ When a token is created, they contain a keys object, which contains the kid to b
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Fixed Login / Logout button and functionality
+Started Convertinf FBV to CBV
 
-1. Changed the button to be conditionally rendering a button and a Link in Navbar/tsx
-2. Adjusted redirecting with conditions to ensure smooth UX
-3. Added removeQueries to logout function to ensure removal of all data from browser
+1.  Added CSRF View that is used by front end to obtain CSRF token prior to other calls.
+2.  Modified auth_views from FBV to CBV
+3.  Created a csrf hook on front end that is used prior to other calls.
+4.  Added csrf to login call from frontend
 
-Q.A. Login/Logout with provided credentials. 
+Q.A.  Attempt to login using provided credentials, the login should be successful.  Loggin notes added to console.
