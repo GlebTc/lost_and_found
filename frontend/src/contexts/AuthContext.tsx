@@ -32,11 +32,16 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   profile: null,
   loading: true,
-  logout: async () => {},
+  logout: async () => { },
   refreshProfile: async () => {
     throw new Error('refreshProfile not implemented');
   },
 });
+
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? match[2] : null;
+}
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const {
@@ -61,12 +66,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient();
   // 5. Logout function that tells backend and clears profile
   const logout = async () => {
+    const csrfToken = getCookie('csrftoken');
+
+    if (!csrfToken) {
+      console.error('CSRF token not found. Logout aborted.');
+      return;
+    }
+
+
     try {
       const logoutResponse = await axios.post(
         'http://localhost:8000/api/v1/auth/logout/',
         {},
         {
           withCredentials: true,
+          headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+          },
         }
       );
 
