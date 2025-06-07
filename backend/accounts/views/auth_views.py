@@ -5,7 +5,7 @@ import pdb
 
 # Django
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_protect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,11 +23,6 @@ from database.supabase_client import supabase
 # ENV
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
 SUPABASE_API_KEY = os.getenv("SUPABASE_ANON_API_KEY")
-
-@method_decorator(ensure_csrf_cookie, name='dispatch')
-class CsrfTokenView(APIView):
-    def get(self, request):
-        return Response({'message': 'CSRF cookie set'}, status=status.HTTP_200_OK)
 
 @method_decorator(csrf_protect, name='dispatch')
 class RegisterUserView(APIView):

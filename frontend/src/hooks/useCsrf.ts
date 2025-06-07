@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '@/src/data/constants'
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -13,7 +14,7 @@ export const useCsrf = () => {
   useEffect(() => {
     const fetchCsrf = async () => {
       try {
-        await axios.get('http://localhost:8000/api/v1/auth/csrf/', {
+        await axios.get(`${BASE_URL}/csrf/`, {
           withCredentials: true,
         });
 
