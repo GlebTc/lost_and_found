@@ -7,6 +7,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import axios from 'axios';
+import {BASE_URL} from '@/src/data/constants'
 
 // 1. Define profile interface
 interface UserProfile {
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ['profile'],
     queryFn: async () => {
       const response = await axios.get(
-        'http://localhost:8000/api/v1/accounts/profile/',
+        `${BASE_URL}/accounts/profile/`,
         {
           withCredentials: true,
         }
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const logoutResponse = await axios.post(
-        'http://localhost:8000/api/v1/auth/logout/',
+        `${BASE_URL}/auth/logout/`,
         {},
         {
           withCredentials: true,
