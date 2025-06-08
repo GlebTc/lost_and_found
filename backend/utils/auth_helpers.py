@@ -1,77 +1,40 @@
 from rest_framework.response import Response
 from rest_framework import status
-import jwt
+from jose import jwt, JWTError
 from database.supabase_client import supabase
 from accounts.models import Profile
 from accounts.serializers import ProfileSerializer
-
-
-from jose import jwt
-from jose.constants import ALGORITHMS
-import requests
 import os
 
+SUPABASE_SECRET = os.getenv("SUPABASE_JWT_SECRET")  # This is your JWT secret for HS256
 SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
-JWKS_URL = f"{SUPABASE_PROJECT_URL}/auth/v1/keys"
 
-import os
-import requests
-from jose import jwt
-from jose.exceptions import JWTError
-
-SUPABASE_PROJECT_URL = os.getenv("SUPABASE_PROJECT_URL")
-JWKS_URL = f"{SUPABASE_PROJECT_URL}/auth/v1/keys"
-
-# Fetch JWKS (JSON Web Key Set).  The response will contain a list of dictionaries that have kid in them
-def get_supabase_jwks():
-    response = requests.get(JWKS_URL)
-    response.raise_for_status()
-    return response.json()
 
 def verify_and_decode_jwt(request):
-    # 1. Obtain the JWT from the cookie
+    # 1. Get the JWT from the cookie
     jwt_cookie = request.COOKIES.get("jwt")
     if not jwt_cookie:
         return None, "JWT cookie is missing."
 
-    # 2. Parse the token out of cookie string. (From "Bearer <token>" to "<token>")
+    # 2. Extract raw token from "Bearer <token>" format
     jwt_token = jwt_cookie.split(" ")[1] if " " in jwt_cookie else jwt_cookie
 
-
     try:
-    # 3. Verify JWT signature using Supabase JWKS and JWT kid (Key ID).
-        jwks = get_supabase_jwks()
-        unverified_header = jwt.get_unverified_header(jwt_token)
-        rsa_key = next(
-            (
-                {
-                    "kty": key["kty"],
-                    "kid": key["kid"],
-                    "use": key["use"],
-                    "n": key["n"],
-                    "e": key["e"],
-                }
-                for key in jwks["keys"]
-                if key["kid"] == unverified_header["kid"]
-            ),
-            None,
-        )
-        if rsa_key is None:
-            raise ValueError("Matching key not found in JWKS")
-        
-    # 4. If valid, return the decoded payload.
+        # 3. Decode the token using HS256 and your service key
         decoded = jwt.decode(
             jwt_token,
-            rsa_key,
-            algorithms=[unverified_header["alg"]],
+            key=SUPABASE_SECRET,
+            algorithms=["HS256"],
+            options={"verify_aud": False},
             issuer=f"{SUPABASE_PROJECT_URL}/auth/v1"
         )
         return decoded, None
 
     except JWTError as e:
-        return None, str(e)
+        return None, f"JWT verification failed: {str(e)}"
     except Exception as e:
-        return None, f"JWT verification failed: {e}"
+        return None, f"Unexpected error during JWT verification: {e}"
+
 
 def get_profile_details(request):
     decoded_jwt, error = verify_and_decode_jwt(request)
@@ -97,6 +60,7 @@ def get_profile_details(request):
             'status': 'error',
             'message': 'User profile not found.'
         }, status=status.HTTP_404_NOT_FOUND)
+
 
 def get_requestor_role(request):
     decoded_jwt, error = verify_and_decode_jwt(request)
@@ -127,5 +91,5 @@ def get_requestor_role(request):
             'status': 'error',
             'message': 'Failed to retrieve user role.'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    return role_check.data.get("role", "user"), None
 
+    return role_check.data.get("role", "user"), None
