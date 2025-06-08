@@ -85,8 +85,8 @@ def get_requestor_role(request):
         .single()
         .execute()
     )
-
-    if role_check.error:
+    
+    if not role_check.data:
         return None, Response({
             'status': 'error',
             'message': 'Failed to retrieve user role.'
