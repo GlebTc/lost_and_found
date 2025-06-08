@@ -30,7 +30,7 @@ class classProfileDetailView(APIView):
             return Response(serializer.data)
         except Profile.DoesNotExist:
             return Response({
-                'error': f"Could not fine profile with {auth_id}",
+                'error': f"Could not find profile with {auth_id}",
             }, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({
@@ -52,7 +52,7 @@ class classProfileDetailView(APIView):
             if new_password:
                 if not current_password:
                     return Response({
-                        'status': 'errror',
+                        'status': 'error',
                         'message': 'Current password required to change password'
                     }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -73,7 +73,7 @@ class classProfileDetailView(APIView):
 
                 return Response({
                     'status': 'success',
-                    'message': 'Password updatd successfully'
+                    'message': 'Password updated successfully'
                 })
             
             # If patch request is not for password
@@ -108,7 +108,7 @@ class classProfileDetailView(APIView):
             profile = Profile.objects.get(id=auth_id)
             profile.delete()
             supabase_admin.auth.admin.delete_user(auth_id)
-            return Response({'message': "Profile deleted successfully"})
+            return Response({'message': "Profile deleted successfully"}, status=status.HTTP_200_OK)
         
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
