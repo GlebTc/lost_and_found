@@ -69,11 +69,10 @@ When a token is created, they contain a keys object, which contains the kid to b
 
 
 ===============================================================COMMIT NOTES=====================================================================
-Started Convertinf FBV to CBV
+Changed from JWKS (RS256) to HS256 JWT verification
 
-1.  Added CSRF View that is used by front end to obtain CSRF token prior to other calls.
-2.  Modified auth_views from FBV to CBV
-3.  Created a csrf hook on front end that is used prior to other calls.
-4.  Added csrf to login call from frontend
+1.  Supabase does not allow to change JWT signing algorithm
+2.  Token decoding swithec to HS256
+3.  All JWT verification is done on backend
 
-Q.A.  Attempt to login using provided credentials, the login should be successful.  Loggin notes added to console.
+Q.A.  Login using valid credentials, visit profile page, modify profile

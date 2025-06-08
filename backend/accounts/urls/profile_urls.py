@@ -1,7 +1,7 @@
 from django.urls import path
-from ..views.profile_views_BU import get_patch_delete_profile_and_user
+from ..views.profile_views import classProfileDetailView
 
 urlpatterns = [
     # Profile endpoints
-    path('profile/', get_patch_delete_profile_and_user, name="get_patch_delete_profile_and_user" )
+    path('profile/', classProfileDetailView.as_view(), name="get_patch_delete_profile_and_user" )
 ]

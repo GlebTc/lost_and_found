@@ -32,7 +32,7 @@ class classProfileDetailView(APIView):
             return Response({
                 'error': f"Could not fine profile with {auth_id}",
             }, status=status.HTTP_404_NOT_FOUND)
-        except Eception as e:
+        except Exception as e:
             return Response({
                 'error': 'Unable to process request',
                 'message': str(e)
